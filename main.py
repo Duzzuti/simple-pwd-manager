@@ -18,7 +18,7 @@ def generate_key(password: str, salt: bytes) -> bytes:
         algorithm=hashes.SHA256(),
         length=32,
         salt=salt,
-        iterations=100000,
+        iterations=5000000,
         backend=default_backend()
     )
     return kdf.derive(password.encode())
