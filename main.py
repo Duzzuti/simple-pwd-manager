@@ -8,23 +8,34 @@ import UX
 
 # init the file structure and exits if there are any problems
 structureTools.init()
+lastUsedFile = structureTools.getLastUsedFile(fullPath=True)
+encFiles = structureTools.getAllFilesInDir(structureTools.userDataDir, fullPaths=True)
 
-if structureTools.isUserDataDirEmpty():
-    UX.newFileHandler()
+
+# SELECT AND DECRYPT FILE
+password = None
+filePath = None
+# no file found, create new file
+if len(encFiles) == 0:
+    filePath, password = UX.newFileHandler()
+# no last used file found
+elif lastUsedFile is None:
+    filePath = UX.chooseEncFile(encFiles)
+    password = UX.getPassword(filePath)
+# last used file found
+elif os.path.isfile(lastUsedFile):
+    filePath = lastUsedFile
+    password = UX.getPassword(filePath)
+# last used file not found
 else:
-    password = easygui.passwordbox("A password file was found ("+file+"). Enter the master password to continue: ", "Password Manager")
-    if password is None:
+    tmp = easygui.msgbox("The last used file ("+lastUsedFile+") was not found. Copy the file back to the location or choose an other file to open", "Password Manager")
+    if tmp is None:
         exit()
-    data = decrypt_file(file, password)
-    while(len(data) < len(correct_bytes) or data[:len(correct_bytes)] != correct_bytes):
-        password = easygui.passwordbox("Wrong password for file ("+file+"). Try again: ", "Password Manager")
-        if password is None:
-            exit()
-        data = decrypt_file(file, password)
-    data = data[len(correct_bytes):]
-
-df_pwd : pd.DataFrame = pickle.loads(data)[0]
-df_info : pd.DataFrame = pickle.loads(data)[1]
+    filePath = UX.chooseEncFile(encFiles)
+    password = UX.getPassword(filePath)
+    
+# df_pwd : pd.DataFrame = pickle.loads(data)[0]
+# df_info : pd.DataFrame = pickle.loads(data)[1]
 
 while True:
     user_choice = easygui.buttonbox("Choose an action: ", "Password Manager", ["Show passwords", "Add password", "Show other", "Add other", "Delete/Change Password", "Exit"])

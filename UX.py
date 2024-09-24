@@ -1,8 +1,11 @@
 import easygui
+import os
+
 import structureTools
+import encryption
 
-
-def newFileHandler():
+# let the user create a new file and returns (filePath, password)
+def newFileHandler() -> tuple[str, str]:
     while True:
         newFileName = easygui.enterbox("No encrypted password file found. Do you want to create a new one?", "Password Manager", structureTools.defaultEncFileWithoutExt)
         if newFileName is None:
@@ -41,3 +44,27 @@ def newFileHandler():
     structureTools.createEncryptedFile(newFileName, password)
     #TODO, new login?
     easygui.msgbox("Welcome to the password manager\nYou can enter your password data in this interface\nThe data will be encrypted with the master password and stored in the file (" + newFileName + ")\nYou should do a backup of the file regularly to avoid losing data\nIf you lose the file, you will lose all data in it", "Password Manager")
+    return os.path.join(structureTools.userDataDir, newFileName + ".enc"), password
+
+def chooseEncFile(encFiles: list[str]) -> str:
+    if len(encFiles) == 1:
+        return encFiles[0]
+    fileName = easygui.choicebox("Choose a file to open: ", "Password Manager", encFiles)
+    if fileName is None:
+        exit()
+    return os.path.join(structureTools.userDataDir, fileName + ".enc")
+
+# TODO return data too?
+def getPassword(filePath: str) -> str:
+    while True:
+        password = easygui.passwordbox("Enter the master password for the file ("+filePath+"): ", "Password Manager")
+        if password is None:
+            exit()
+        data = encryption.decrypt_file(filePath, password)
+        while(not encryption.isPasswordCorrect(data)):
+            password = easygui.passwordbox("Wrong password for file ("+filePath+"). Try again: ", "Password Manager")
+            if password is None:
+                exit()
+            data = encryption.decrypt_file(filePath, password)
+        #     data = data[len(correct_bytes):]
+        return password

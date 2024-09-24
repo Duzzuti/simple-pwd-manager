@@ -74,3 +74,6 @@ def encrypt_pdata(data: Data, output_file: str, password: str):
     
     with open(output_file, 'wb') as f:
         f.write(salt + encrypted_data)
+
+def isPasswordCorrect(encData: bytes) -> bool:
+    return not(len(encData) < len(correct_bytes) or encData[:len(correct_bytes)] != correct_bytes)

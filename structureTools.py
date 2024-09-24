@@ -19,10 +19,12 @@ def saveLastUsedFile(file):
     with open("lastUsedFile.txt", "w") as f:
         f.write(file)
 
-def getLastUsedFile() -> str:
+def getLastUsedFile(fullPath = False) -> str:
     if not os.path.isfile("lastUsedFile.txt"):
         return None
     with open("lastUsedFile.txt", "r") as f:
+        if fullPath:
+            return os.path.join(userDataDir, f.read() + ".enc")
         return f.read()
 
 def verifyFileName(fileName) -> bool:
@@ -52,9 +54,12 @@ def checkUserDataValidity() -> tuple[bool, str]:
     return (True, None)
 
 
-def getAllFilesInDir(directory) -> list:
+def getAllFilesInDir(directory, fullPath = False) -> list:
     files = []
     for file in os.listdir(directory):
         if os.path.isfile(os.path.join(directory, file)):
-            files.append(file)
+            if fullPath:
+                files.append(os.path.join(directory, file))
+            else:
+                files.append(file)
     return files
