@@ -4,6 +4,8 @@ import pandas as pd
 import pickle
 
 import structureTools
+import encryption
+from data import Data
 import UX
 
 # init the file structure and exits if there are any problems
@@ -33,54 +35,22 @@ else:
         exit()
     filePath = UX.chooseEncFile(encFiles)
     password = UX.getPassword(filePath)
-    
-# df_pwd : pd.DataFrame = pickle.loads(data)[0]
-# df_info : pd.DataFrame = pickle.loads(data)[1]
+
+data = encryption.decrypt_file(filePath, password)
+if not data:
+    easygui.msgbox("The password file could not be decrypted. Please try again.", "Password Manager")
+    exit()
+data : Data = pickle.loads(data)
 
 while True:
     user_choice = easygui.buttonbox("Choose an action: ", "Password Manager", ["Show passwords", "Add password", "Show other", "Add other", "Delete/Change Password", "Exit"])
     if user_choice == "Show passwords":
-        # print full df without index sorted by website
-        if len(df_pwd) == 0:
-            easygui.msgbox("No websites found.", "Password Manager")
-            continue
-        print(df_pwd.sort_values(by="Website").to_string(index=False))
-        input("Press Enter to clear...")
-        os.system('cls' if os.name == 'nt' else 'clear')
+        data.showPwd()
     elif user_choice == "Add password":
-        while True:
-            data_addpwd = easygui.multenterbox("Enter the following information: ", "Password Manager", ["Website", "Email", "Username", "Password"])
-            if data_addpwd is None:
-                break
-            elif data_addpwd[0] == "" or data_addpwd[3] == "":
-                easygui.msgbox("A website and a password is required.", "Password Manager")
-            else:
-                if data_addpwd[0] in df_pwd["Website"].values:
-                    # get all emails and usernames as strings
-                    emails = df_pwd[df_pwd["Website"] == data_addpwd[0]]["Email"].values
-                    usernames = df_pwd[df_pwd["Website"] == data_addpwd[0]]["Username"].values
-                    emails_plus_usernames = "\n".join(["Mail:" + emails[i] + ", User:" + usernames[i] for i in range(len(emails))])
-
-                    user_confirm = easygui.ynbox("The website already exists. Do you want to add the information as an other login? (No does NOT safe the new information). \n" + \
-                                                "If you want to change old information (e.g. a single password) please use the 'Change password' section of the main menu.\n\n" + \
-                                                "Current information for " + data_addpwd[0] + ":\n" +
-                                                emails_plus_usernames + \
-                                                "\nNew information:\n" + \
-                                                "Mail:" + data_addpwd[1] + ", User:" + data_addpwd[2] + "\n", "Password Manager")
-                    if not user_confirm:
-                        continue
-                df_pwd = pd.concat([df_pwd, pd.DataFrame({"Website": [data_addpwd[0]], "Email": [data_addpwd[1]], "Username": [data_addpwd[2]], "Password": [data_addpwd[3]]})], ignore_index=True)
-                encrypt_pdata(pickle.dumps([df_pwd, df_info]), file, password)
-                break
+        data.addPwd()
     # todo show other information in good format
     elif user_choice == "Show other":
-        if len(df_info) == 0:
-            easygui.msgbox("No other information found.", "Password Manager")
-            continue
-        print(df_info.to_string(index=False))
-        input("Press Enter to clear...")
-        os.system('cls' if os.name == 'nt' else 'clear')
-
+        data.showOther()
     # todo handle multiple entries with the same name
     elif user_choice == "Add other":
         while True:
