@@ -53,25 +53,7 @@ while True:
         data.showOther()
     # todo handle multiple entries with the same name
     elif user_choice == "Add other":
-        while True:
-            other_name = easygui.enterbox("Enter a name for the information you want to add. This is only for your reference.", "Password Manager")
-            if other_name is None:
-                break
-            elif other_name == "":
-                easygui.msgbox("A name is required.", "Password Manager")
-                continue
-            while True:
-                other_info = easygui.textbox("Store any information you want for " + other_name, "Password Manager") #Not empty
-                if other_info is None:
-                    break
-                elif other_info == "":
-                    easygui.msgbox("The information is required.", "Password Manager")
-                    continue
-                else:
-                    df_info = pd.concat([df_info, pd.DataFrame({"Name": [other_name], "Info": [other_info]})], ignore_index=True)
-                    encrypt_pdata(pickle.dumps([df_pwd, df_info]), file, password)
-                    break
-            break
+        data.addOther()
     elif user_choice == "Delete/Change Password":
         # if there is only one website, delete it
         if len(df_pwd) == 0:

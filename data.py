@@ -15,6 +15,10 @@ class Data:
     def addPwdToData(self, website: str, email: str, username: str, password: str):
         self.pwd = pd.concat([self.pwd, pd.DataFrame({"Website": [website], "Email": [email], "Username": [username], "Password": [password]})], ignore_index=True)
         self.byteData = pickle.dumps([self.pwd, self.other])
+    
+    def addOtherToData(self, name: str, info: str):
+        self.other = pd.concat([self.other, pd.DataFrame({"Name": [name], "Info": [info]})], ignore_index=True)
+        self.byteData = pickle.dumps([self.pwd, self.other])
 
     def showPwd(self):
         # print full df without index sorted by website
@@ -58,3 +62,23 @@ class Data:
                         continue
                 self.addPwdToData(dataAddPwd[0], dataAddPwd[1], dataAddPwd[2], dataAddPwd[3])
                 break
+    
+    def addOther(self):
+        while True:
+            otherName = easygui.enterbox("Enter a name for the information you want to add. This is only for your reference.", "Password Manager")
+            if otherName is None:
+                break
+            elif otherName == "":
+                easygui.msgbox("A name is required.", "Password Manager")
+                continue
+            while True:
+                otherInfo = easygui.textbox("Store any information you want for " + otherName, "Password Manager")
+                if otherInfo is None:
+                    break
+                elif otherInfo == "":
+                    easygui.msgbox("The information is required.", "Password Manager")
+                    continue
+                else:
+                    self.addOtherToData(otherName, otherInfo)
+                    break
+            break
