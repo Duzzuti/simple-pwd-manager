@@ -1,24 +1,38 @@
-import pickle
 import pandas as pd
 import easygui
 import os
+from io import StringIO
+import settings
 
 class Data:
     def __init__(self):
         self.pwd = pd.DataFrame({"Website": [], "Email": [], "Username": [], "Password": []})
         self.other = pd.DataFrame({"Name": [], "Info": []})
-        self.byteData = pickle.dumps([self.pwd, self.other])
+        self.calculateByteData()
     
-    def getByteData(self) -> bytes:
-        return self.byteData
+    @classmethod
+    def fromBytes(self, byteData: bytes):
+        if len(byteData) < settings.pwdLenBytes:
+            return None
+        data = self()
+        data.byteData = byteData
+        lenPwd = int.from_bytes(byteData[:settings.pwdLenBytes], byteorder="big", signed=False)
+        data.pwd = pd.read_csv(StringIO(byteData[settings.pwdLenBytes:settings.pwdLenBytes+lenPwd].decode()), index_col=False)
+        data.other = pd.read_csv(StringIO(byteData[settings.pwdLenBytes+lenPwd:].decode()), index_col=False)
+        return data
+    
+    def calculateByteData(self):
+        pwdBytes = self.pwd.to_csv(index=False).encode()
+        otherBytes = self.other.to_csv(index=False).encode()
+        self.byteData = len(pwdBytes).to_bytes(settings.pwdLenBytes, signed=False, byteorder="big") + pwdBytes + otherBytes
 
     def addPwdToData(self, website: str, email: str, username: str, password: str):
         self.pwd = pd.concat([self.pwd, pd.DataFrame({"Website": [website], "Email": [email], "Username": [username], "Password": [password]})], ignore_index=True)
-        self.byteData = pickle.dumps([self.pwd, self.other])
+        self.calculateByteData()
     
     def addOtherToData(self, name: str, info: str):
         self.other = pd.concat([self.other, pd.DataFrame({"Name": [name], "Info": [info]})], ignore_index=True)
-        self.byteData = pickle.dumps([self.pwd, self.other])
+        self.calculateByteData()
 
     def showPwd(self):
         # print full df without index sorted by website

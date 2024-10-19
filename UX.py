@@ -60,11 +60,11 @@ def getPassword(filePath: str) -> str:
         password = easygui.passwordbox("Enter the master password for the file ("+filePath+"): ", "Password Manager")
         if password is None:
             exit()
-        data = encryption.decrypt_file(filePath, password)
-        while(not encryption.isPasswordCorrect(data)):
+        dataBytes = encryption.decrypt_file(filePath, password)
+        while(not dataBytes):
             password = easygui.passwordbox("Wrong password for file ("+filePath+"). Try again: ", "Password Manager")
             if password is None:
                 exit()
-            data = encryption.decrypt_file(filePath, password)
+            dataBytes = encryption.decrypt_file(filePath, password)
         #     data = data[len(correct_bytes):]
         return password
