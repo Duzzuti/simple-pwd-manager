@@ -3,6 +3,7 @@ import easygui
 
 import encryption
 from data import Data
+import settings
 
 userDataDir = "userData"
 defaultEncFileWithoutExt = "pEnc"
@@ -24,7 +25,7 @@ def getLastUsedFile(fullPath = False) -> str:
         return None
     with open("lastUsedFile.txt", "r") as f:
         if fullPath:
-            return os.path.join(userDataDir, f.read() + ".enc")
+            return os.path.join(userDataDir, f.read() + settings.extension)
         return f.read()
 
 def verifyFileName(fileName) -> bool:
@@ -42,14 +43,14 @@ def isUserDataDirEmpty() -> bool:
     return len(os.listdir(userDataDir)) == 0
 
 def createEncryptedFile(fileName, password):
-    open(os.path.join(userDataDir, fileName + ".enc"), 'wb').close()
+    open(os.path.join(userDataDir, fileName + settings.extension), 'wb').close()
     saveLastUsedFile(fileName)
-    encryption.encrypt_pdata(Data(), os.path.join(userDataDir, fileName + ".enc"), password)
+    encryption.encrypt_file(Data().byteData, os.path.join(userDataDir, fileName + settings.extension), password)
 
 #check if only .enc files are in the userData directory
 def checkUserDataValidity() -> tuple[bool, str]:
     for object in os.listdir(userDataDir):
-        if not os.path.isfile(os.path.join(userDataDir, object)) or not object.endswith(".enc"):
+        if not os.path.isfile(os.path.join(userDataDir, object)) or not object.endswith(settings.extension):
             return (False, object)
     return (True, None)
 
