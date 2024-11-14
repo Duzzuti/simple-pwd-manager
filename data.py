@@ -3,12 +3,18 @@ import easygui
 import os
 from io import StringIO
 import settings
+import encryption
 
 class Data:
     def __init__(self):
         self.pwd = pd.DataFrame({"Website": [], "Email": [], "Username": [], "Password": []})
         self.other = pd.DataFrame({"Name": [], "Info": []})
         self.calculateByteData()
+
+        # holds full filepath to the encrypted file
+        self.filepath = None
+        # holds the password for the encrypted file
+        self.password = None
     
     @classmethod
     def fromBytes(self, byteData: bytes):
@@ -20,6 +26,15 @@ class Data:
         data.pwd = pd.read_csv(StringIO(byteData[settings.pwdLenBytes:settings.pwdLenBytes+lenPwd].decode()), index_col=False)
         data.other = pd.read_csv(StringIO(byteData[settings.pwdLenBytes+lenPwd:].decode()), index_col=False)
         return data
+
+    def setMeta(self, filepath: str, password: str):
+        self.filepath = filepath
+        self.password = password
+    
+    def requireMeta(self):
+        if self.filepath is None or self.password is None:
+            easygui.msgbox("Meta data is required for this action.", "Password Manager")
+            exit()
     
     def calculateByteData(self):
         pwdBytes = self.pwd.to_csv(index=False).encode()
@@ -52,7 +67,8 @@ class Data:
             os.system('cls' if os.name == 'nt' else 'clear')
     
     def addPwd(self):
-        # asks the user for new password data and adds it to the dataframe
+        self.requireMeta()
+        # asks the user for new password data and adds it to the Dataframe
         while True:
             dataAddPwd = easygui.multenterbox("Enter the following information: ", "Password Manager", ["Website", "Email", "Username", "Password"])
             if dataAddPwd is None:
@@ -75,9 +91,11 @@ class Data:
                     if not userConfirm:
                         continue
                 self.addPwdToData(dataAddPwd[0], dataAddPwd[1], dataAddPwd[2], dataAddPwd[3])
+                encryption.encrypt_file(self.byteData, self.filepath, self.password)
                 break
     
     def addOther(self):
+        self.requireMeta()
         while True:
             otherName = easygui.enterbox("Enter a name for the information you want to add. This is only for your reference.", "Password Manager")
             if otherName is None:
@@ -94,5 +112,35 @@ class Data:
                     continue
                 else:
                     self.addOtherToData(otherName, otherInfo)
+                    encryption.encrypt_file(self.byteData, self.filepath, self.password)
                     break
             break
+    
+    def changeData(self):
+        self.requireMeta()
+        if len(self.pwd) == 0:
+            easygui.msgbox("No websites found.", "Password Manager")
+        elif len(self.pwd) == 1:
+            choice = [self.pwd["Website"].values[0]]
+        else:
+            choice = easygui.multchoicebox("Choose the websites to delete or change the information for: ", "Password Manager", self.pwd["Website"].sort_values().tolist())
+        if choice is not None:
+            for i in choice:
+                choiceAction = easygui.buttonbox("Choose an action for " + i + ": ", "Password Manager", ["Delete", "Change Information", "Skip"])
+                if choiceAction == "Skip" or choiceAction is None:
+                    continue
+                elif choiceAction == "Delete":
+                    self.pwd = self.pwd[self.pwd["Website"] != i]
+                    self.calculateByteData()
+                elif choiceAction == "Change Information":
+                    while True:
+                        newData = easygui.multenterbox("Enter the following information: ", "Password Manager", ["Website", "Email", "Username", "Password"], [i, self.pwd[self.pwd["Website"] == i]["Email"].values[0], self.pwd[self.pwd["Website"] == i]["Username"].values[0], self.pwd[self.pwd["Website"] == i]["Password"].values[0]])
+                        if newData[0] == "" or newData[3] == "":
+                            easygui.msgbox("A website and a password is required.", "Password Manager")
+                        else:
+                            break
+                    if newData is not None:
+                        self.pwd = self.pwd[self.pwd["Website"] != i]
+                        self.addPwdToData(newData[0], newData[1], newData[2], newData[3])
+                encryption.encrypt_file(self.byteData, self.filepath, self.password)
+        
