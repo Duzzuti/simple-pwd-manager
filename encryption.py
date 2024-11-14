@@ -1,32 +1,38 @@
 import os
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives import padding, hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.hmac import HMAC
+from cryptography.exceptions import InvalidSignature
 import settings
 
-from data import Data
-
-# string used to verify password
-correctBytes = "kolajlfdalöfdasnifjnasnofjasidfnoiasnfkajsfndjkasdfoasdjfioasdiujf\n".encode()
-
 # Function to generate a key from a password
-def generate_key(password: str, salt: bytes) -> bytes:
+def generate_keys(password: str, salt: bytes) -> tuple[bytes, bytes]:
     kdf = Scrypt(
-        length=32,
+        length=64,
         salt=salt,
         backend=default_backend(),
         n=settings.n,
         r=settings.r,
         p=settings.p
     )
-    return kdf.derive(password.encode())
+    keyBytes = kdf.derive(password.encode())
+    return keyBytes[:32], keyBytes[32:]
 
 # Function to decrypt data
-def decrypt(data: bytes, key: bytes) -> bytes:
+def decrypt(data: bytes, key: bytes, hmacKey: bytes) -> bytes:
     iv = data[:16]  # The first 16 bytes are the IV
-    encrypted_data = data[16:]  # The rest is the encrypted data
+    hmacValue = data[16:48]  # The next 32 bytes are the HMAC value
+    encrypted_data = data[48:]  # The rest is the encrypted data
+
+    # Verify HMAC
+    hmac = HMAC(hmacKey, hashes.SHA256())
+    hmac.update(iv + encrypted_data)
+    try:
+        hmac.verify(hmacValue)
+    except InvalidSignature:
+        raise ValueError("HMAC verification failed. Incorrect password or tampered data.")
     
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     decryptor = cipher.decryptor()
@@ -45,41 +51,37 @@ def decrypt_file(inputFile: str, password: str) -> bytes:
     salt = fileData[:16]  # Extract the salt (first 16 bytes)
     encryptedData = fileData[16:]  # The rest is encrypted data
 
-    key = generate_key(password, salt)
+    key, hmacKey = generate_keys(password, salt)
     try:
-        decDataPadded = decrypt(encryptedData, key)
-        if is_password_correct(decDataPadded):
-            return decDataPadded[len(correctBytes):]
-        else:
-            return b""
-    except:
+        return decrypt(encryptedData, key, hmacKey)
+    except ValueError:
         return b""
+    except Exception as e:
+        print(e)
+        exit()
 
 # Function to encrypt data
-def encrypt(data: bytes, key: bytes) -> bytes:
+def encrypt(data: bytes, key: bytes, hmacKey: bytes) -> bytes:
     iv = os.urandom(16)
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
     encryptor = cipher.encryptor()
     padder = padding.PKCS7(algorithms.AES.block_size).padder()
     paddedData = padder.update(data) + padder.finalize()
     encryptedData = encryptor.update(paddedData) + encryptor.finalize()
-    return iv + encryptedData
+    
+    # Generate HMAC
+    hmac = HMAC(hmacKey, hashes.SHA256(), backend=default_backend())
+    hmac.update(iv + encryptedData)
+    hmacValue = hmac.finalize()
+    
+    return iv + hmacValue + encryptedData
 
 # Function to encrypt a file
-def encrypt_file(data: Data, outputFile: str, password: str):
+def encrypt_file(byteData: bytes, outputFile: str, password: str):
     salt = os.urandom(16)  # Generate a random salt
-    key = generate_key(password, salt)
+    key, hmacKey = generate_keys(password, salt)
 
-    # add correct string at the start of the file
-    fileData = correctBytes
-    # add data
-
-    fileData += data.byteData
-
-    encryptedData = encrypt(fileData, key)
+    encryptedData = encrypt(byteData, key, hmacKey)
     
     with open(outputFile, 'wb') as f:
         f.write(salt + encryptedData)
-
-def is_password_correct(encData: bytes) -> bool:
-    return not(len(encData) < len(correctBytes) or encData[:len(correctBytes)] != correctBytes)

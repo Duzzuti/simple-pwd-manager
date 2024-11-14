@@ -1,3 +1,10 @@
+# project files
+
+lastUsedFile.txt
+userData
+.vscode
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
