@@ -14,25 +14,29 @@ encFiles = structureTools.getAllFilesInDir(structureTools.userDataDir, fullPath=
 # SELECT AND DECRYPT FILE
 password = None
 filePath = None
+byteData = None
 # no file found, create new file
 if len(encFiles) == 0:
     filePath, password = UX.newFileHandler()
-    byteData = Data().byteData
 # no last used file found
 elif lastUsedFile is None:
     filePath = UX.chooseEncFile(encFiles)
-    password, byteData = UX.getPassword(filePath)
+    filePath, password, byteData = UX.getPassword(filePath, encFiles)
 # last used file found
 elif os.path.isfile(lastUsedFile):
     filePath = lastUsedFile
-    password, byteData = UX.getPassword(filePath)
+    filePath, password, byteData = UX.getPassword(filePath, encFiles)
 # last used file not found
 else:
     tmp = easygui.msgbox("The last used file ("+lastUsedFile+") was not found. Copy the file back to the location or choose an other file to open", "Password Manager")
     if tmp is None:
         exit()
     filePath = UX.chooseEncFile(encFiles)
-    password, byteData = UX.getPassword(filePath)
+    filePath, password, byteData = UX.getPassword(filePath, encFiles)
+
+# new file was created
+if byteData == None:
+    byteData = Data().byteData
 
 if not byteData:
     easygui.msgbox("The password file could not be decrypted. Please try again.", "Password Manager")

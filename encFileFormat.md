@@ -13,6 +13,6 @@
 ## Decrypted Data Format
 |Bytes|DefaultLength|Symbol|Description|
 |-----------|--|---|--------------------------|
-|0    - 7   |8 |pl|Length of the password section|
-|8    - 7+pl|- |PS|Password section|
-|8+pl - EOF |- |OS|Other section|
+|0    - 7   |8 |pl |Length of the password section|
+|8    - 7+pl|- |PS |Password section|
+|8+pl - EOF |- |OS |Other section|

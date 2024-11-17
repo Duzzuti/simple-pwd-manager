@@ -37,6 +37,10 @@ def verifyFileName(fileName) -> bool:
         if char not in validChars:
             easygui.msgbox("The file name contains invalid characters ('"+char+"'). Only letters, numbers and underscores are allowed.", "Password Manager")
             return False
+    # check if file already exists
+    if os.path.isfile(os.path.join(userDataDir, fileName + settings.extension)):
+        easygui.msgbox("A file with the name '"+fileName+"' already exists. Please choose another name.", "Password Manager")
+        return False
     return True
 
 def isUserDataDirEmpty() -> bool:
