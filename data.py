@@ -22,9 +22,16 @@ class Data:
             return None
         data = self()
         data.byteData = byteData
-        lenPwd = int.from_bytes(byteData[:settings.pwdLenBytes], byteorder="big", signed=False)
-        data.pwd = pd.read_csv(StringIO(byteData[settings.pwdLenBytes:settings.pwdLenBytes+lenPwd].decode()), index_col=False)
-        data.other = pd.read_csv(StringIO(byteData[settings.pwdLenBytes+lenPwd:].decode()), index_col=False)
+        pos = 0
+        randomLength = byteData[0]
+        pos += 1
+        randomBytes = byteData[pos:pos+randomLength]
+        pos += randomLength
+        lenPwd = int.from_bytes(byteData[pos:pos+settings.pwdLenBytes], byteorder="big", signed=False)
+        pos += settings.pwdLenBytes
+        
+        data.pwd = pd.read_csv(StringIO(byteData[pos:pos+lenPwd].decode()), index_col=False)
+        data.other = pd.read_csv(StringIO(byteData[pos+lenPwd:].decode()), index_col=False)
         return data
 
     def setMeta(self, filepath: str, password: str):
@@ -39,7 +46,14 @@ class Data:
     def calculateByteData(self):
         pwdBytes = self.pwd.to_csv(index=False).encode()
         otherBytes = self.other.to_csv(index=False).encode()
-        self.byteData = len(pwdBytes).to_bytes(settings.pwdLenBytes, signed=False, byteorder="big") + pwdBytes + otherBytes
+        randomLength = os.urandom(1)
+        randomBytes = os.urandom(int.from_bytes(randomLength, byteorder="big", signed=False))
+        self.byteData = \
+            randomLength + \
+            randomBytes + \
+            len(pwdBytes).to_bytes(settings.pwdLenBytes, signed=False, byteorder="big") + \
+            pwdBytes + \
+            otherBytes
 
     def addPwdToData(self, website: str, email: str, username: str, password: str):
         self.pwd = pd.concat([self.pwd, pd.DataFrame({"Website": [website], "Email": [email], "Username": [username], "Password": [password]})], ignore_index=True)

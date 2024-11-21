@@ -12,7 +12,9 @@
 
 ## Decrypted Data Format
 |Bytes|DefaultLength|Symbol|Description|
-|-----------|--|---|--------------------------|
-|0    - 7   |8 |pl |Length of the password section|
-|8    - 7+pl|- |PS |Password section|
-|8+pl - EOF |- |OS |Other section|
+|---------------|--|---|--------------------------|
+|0              |1 |rl |Length of the random padding section|
+|1    - rl      |- |RP |Random padding section|
+|1+rl - 8+rl    |8 |pl |Length of the password section|
+|9+rl - 8+pl+rl |- |PS |Password section|
+|9+pl+rl - EOF  |- |OS |Other section|
