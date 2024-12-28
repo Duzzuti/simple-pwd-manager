@@ -1,9 +1,12 @@
+import traceback
 import pandas as pd
 import easygui
 import os
 from io import StringIO
+
 import settings
 import encryption
+from sys import exit
 
 class Data:
     def __init__(self):
@@ -22,16 +25,20 @@ class Data:
             return None
         data = self()
         data.byteData = byteData
-        pos = 0
-        randomLength = byteData[0]
-        pos += 1
-        randomBytes = byteData[pos:pos+randomLength]
-        pos += randomLength
-        lenPwd = int.from_bytes(byteData[pos:pos+settings.pwdLenBytes], byteorder="big", signed=False)
-        pos += settings.pwdLenBytes
+        try:
+            randomLength = byteData[0]
+            pos = 1
+            randomBytes = byteData[pos:pos+randomLength]
+            pos += randomLength
+            lenPwd = int.from_bytes(byteData[pos:pos+settings.pwdLenBytes], byteorder="big", signed=False)
+            pos += settings.pwdLenBytes
         
-        data.pwd = pd.read_csv(StringIO(byteData[pos:pos+lenPwd].decode()), index_col=False)
-        data.other = pd.read_csv(StringIO(byteData[pos+lenPwd:].decode()), index_col=False)
+            data.pwd = pd.read_csv(StringIO(byteData[pos:pos+lenPwd].decode()), index_col=False)
+            data.other = pd.read_csv(StringIO(byteData[pos+lenPwd:].decode()), index_col=False)
+        except IndexError:
+            easygui.msgbox("The file is corrupted. The format is not as expected.", "Password Manager")
+            traceback.print_exc()
+            exit()
         return data
 
     def setMeta(self, filepath: str, password: str):
@@ -51,7 +58,7 @@ class Data:
         self.byteData = \
             randomLength + \
             randomBytes + \
-            len(pwdBytes).to_bytes(settings.pwdLenBytes, signed=False, byteorder="big") + \
+            encryption.intToBytes(len(pwdBytes), settings.pwdLenBytes) + \
             pwdBytes + \
             otherBytes
 
