@@ -73,9 +73,9 @@ class Data:
     def showPwd(self):
         # print full df without index sorted by website
         if len(self.pwd) == 0:
-            easygui.msgbox("No websites found.", "Password Manager")
+            easygui.msgbox("No logins found.", "Password Manager")
         else:
-            print(self.pwd.sort_values(by="Website").to_string(index=False))
+            print(self.pwd.sort_values(by="Website").rename(columns={"Website": "Website/App"}, inplace=False).to_string(index=False))
             input("Press Enter to clear...")
             os.system('cls' if os.name == 'nt' else 'clear')
     
@@ -91,11 +91,11 @@ class Data:
         self.requireMeta()
         # asks the user for new password data and adds it to the Dataframe
         while True:
-            dataAddPwd = easygui.multenterbox("Enter the following information: ", "Password Manager", ["Website", "Email", "Username", "Password"])
+            dataAddPwd = easygui.multenterbox("Enter the following information: ", "Password Manager", ["Website/App (required)", "Email", "Username", "Password (required)"])
             if dataAddPwd is None:
                 break
             elif dataAddPwd[0] == "" or dataAddPwd[3] == "":
-                easygui.msgbox("A website and a password is required.", "Password Manager")
+                easygui.msgbox("A website/app and a password is required.", "Password Manager")
             else:
                 if dataAddPwd[0] in self.pwd["Website"].values:
                     # get all emails and usernames as strings
@@ -103,7 +103,7 @@ class Data:
                     usernames = self.pwd[self.pwd["Website"] == dataAddPwd[0]]["Username"].values
                     emailsPlusUsernames = "\n".join(["Mail:" + emails[i] + ", User:" + usernames[i] for i in range(len(emails))])
 
-                    userConfirm = easygui.ynbox("The website already exists. Do you want to add the information as an other login? (No does NOT safe the new information). \n" + \
+                    userConfirm = easygui.ynbox("An entry for this website/app already exists. Do you want to add the information as an other login? (No does NOT safe the new information). \n" + \
                                                 "If you want to change old information (e.g. a single password) please use the 'Change password' section of the main menu.\n\n" + \
                                                 "Current information for " + dataAddPwd[0] + ":\n" +
                                                 emailsPlusUsernames + \
@@ -140,11 +140,11 @@ class Data:
     def changeData(self):
         self.requireMeta()
         if len(self.pwd) == 0:
-            easygui.msgbox("No websites found.", "Password Manager")
+            easygui.msgbox("No logins found.", "Password Manager")
         elif len(self.pwd) == 1:
             choice = [self.pwd["Website"].values[0]]
         else:
-            choice = easygui.multchoicebox("Choose the websites to delete or change the information for: ", "Password Manager", self.pwd["Website"].sort_values().tolist())
+            choice = easygui.multchoicebox("Choose the websites/apps to delete or change the information for: ", "Password Manager", self.pwd["Website"].sort_values().tolist())
         if choice is not None:
             for i in choice:
                 choiceAction = easygui.buttonbox("Choose an action for " + i + ": ", "Password Manager", ["Delete", "Change Information", "Skip"])
@@ -155,9 +155,9 @@ class Data:
                     self.calculateByteData()
                 elif choiceAction == "Change Information":
                     while True:
-                        newData = easygui.multenterbox("Enter the following information: ", "Password Manager", ["Website", "Email", "Username", "Password"], [i, self.pwd[self.pwd["Website"] == i]["Email"].values[0], self.pwd[self.pwd["Website"] == i]["Username"].values[0], self.pwd[self.pwd["Website"] == i]["Password"].values[0]])
+                        newData = easygui.multenterbox("Enter the following information: ", "Password Manager", ["Website/App (required)", "Email", "Username", "Password (required)"], [i, self.pwd[self.pwd["Website"] == i]["Email"].values[0], self.pwd[self.pwd["Website"] == i]["Username"].values[0], self.pwd[self.pwd["Website"] == i]["Password"].values[0]])
                         if newData[0] == "" or newData[3] == "":
-                            easygui.msgbox("A website and a password is required.", "Password Manager")
+                            easygui.msgbox("A website/app and a password is required.", "Password Manager")
                         else:
                             break
                     if newData is not None:
