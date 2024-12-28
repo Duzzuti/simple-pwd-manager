@@ -1,10 +1,10 @@
 import easygui
 import os
+import tkinter as tk
 
 import structureTools
 import encryption
 import settings
-import tkinter as tk
 
 def createPasswordWindow(text: str, title: str, encFiles: list[str], filePath: str) -> tuple[str, str]:
     retCode = "CANCEL"

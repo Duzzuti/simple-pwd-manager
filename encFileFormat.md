@@ -1,14 +1,16 @@
 ## Encrypted File Format
 |Bytes|DefaultLength|Symbol|Description|
 |-----------|--|---|--------------------------|
-|0          |1 |sl |Salt length in Bytes      |
-|1    - sl  |16|S  |Salt used for derived key generation|
-|1+sl       |1 |N  |Parameter n used for key derivation as 2**N|
-|2+sl       |1 |r  |Parameter r used for key derivation|
-|3+sl       |1 |p  |Parameter p used for key derivation|
-|4+sl -19+sl|16|IV |Initialization Vector used for encryption|
-|20+sl-51+sl|32|HV |HMAC Value of the IV + encrypted data, length is bound to hash function (we use SHA256)|
-|52+sl- EOF |- |ED |Encrypted Data|
+|0          |1 |mv |Major version number      |
+|1          |1 |mi |Minor version number      |
+|2          |1 |sl |Salt length in Bytes      |
+|3    - sl+2|16|S  |Salt used for derived key generation|
+|3+sl       |1 |N  |Parameter n used for key derivation as 2**N|
+|4+sl       |1 |r  |Parameter r used for key derivation|
+|5+sl       |1 |p  |Parameter p used for key derivation|
+|6+sl -21+sl|16|IV |Initialization Vector used for encryption|
+|22+sl-53+sl|32|HV |HMAC Value of the IV + encrypted data, length is bound to hash function (we use SHA256)|
+|54+sl- EOF |- |ED |Encrypted Data|
 
 ## Decrypted Data Format
 |Bytes|DefaultLength|Symbol|Description|
