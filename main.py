@@ -1,6 +1,7 @@
 import os
 import easygui
 
+import network
 import structureTools
 from data import Data
 import UX
@@ -10,6 +11,7 @@ structureTools.init()
 lastUsedFile = structureTools.getLastUsedFile(fullPath=True)
 encFiles = structureTools.getAllFilesInDir(structureTools.userDataDir, fullPath=True)
 
+network.check_for_updates()
 
 # SELECT AND DECRYPT FILE
 password = None
