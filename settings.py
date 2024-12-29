@@ -5,4 +5,6 @@ pwdLenBytes = 8    # length of the argument which holds the length of the passwo
 saltLenBytes = 16
 extension = ".enc"
 # has to be in the format "vx.y" where x and y are chars (0-255)
+# changing the version number will lead to unexpected behavior and could lead to corrupted files
+# especially when the goal is to fake an update to be entitled to decrypt some newer version files
 version = "v0.1"

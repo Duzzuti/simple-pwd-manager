@@ -72,9 +72,13 @@ def createPasswordWindow(text: str, title: str, encFiles: list[str], filePath: s
 
 
 # let the user create a new file and returns (filePath, password)
-def newFileHandler() -> tuple[str, str]:
+def newFileHandler(noFileFound=False) -> tuple[str, str]:
     while True:
-        newFileName = easygui.enterbox("No encrypted password file found. Do you want to create a new one?\nEnter file name:", "Password Manager", structureTools.defaultEncFileWithoutExt)
+        if noFileFound:
+            msg = "No encrypted password file found. Creating a new file...\nEnter file name:"
+        else:
+            msg = "Enter new file name:"
+        newFileName = easygui.enterbox(msg, "Password Manager", structureTools.defaultEncFileWithoutExt)
         if newFileName is None:
             exit()
         if structureTools.verifyFileName(newFileName):
@@ -106,10 +110,10 @@ def newFileHandler() -> tuple[str, str]:
     while not userPwdSafeConfirm:
         if userPwdSafeConfirm is None:
             exit()
-        userPwdSafeConfirm = easygui.ynbox("You have to confirm before you can continue. Please make sure to have your password backed up somewhere.", "Password Manager")
+        userPwdSafeConfirm = easygui.ynbox("You have to confirm before you can continue. Please make sure your password is backed up somewhere.", "Password Manager")
     print("Creating new encrypted password file...")
     structureTools.createEncryptedFile(newFileName, password)
-    easygui.msgbox("Welcome to the password manager\nYou can enter your password data in this interface\nThe data will be encrypted with the master password and stored in the file (" + newFileName + ")\nYou should do a backup of the file regularly to avoid losing data\nIf you lose the file, you will lose all data in it", "Password Manager")
+    easygui.msgbox("Welcome to the password manager\nYou can enter your login data in this interface\nThe data will be encrypted with the master password and stored in the file (" + newFileName + ")\nYou should do a backup of the file regularly to avoid losing data\nIf you lose the file, you will lose all data in it", "Password Manager")
     return (os.path.join(structureTools.userDataDir, newFileName + settings.extension), password)
 
 def chooseEncFile(encFiles: list[str], isFullPath = True, preselectFile: str = None) -> str:

@@ -1,4 +1,6 @@
-## Encrypted File Format
+# File Formats
+## v0.1
+### Encrypted File Format
 |Bytes|DefaultLength|Symbol|Description|
 |-----------|--|---|--------------------------|
 |0          |1 |mv |Major version number      |
@@ -9,10 +11,10 @@
 |4+sl       |1 |r  |Parameter r used for key derivation|
 |5+sl       |1 |p  |Parameter p used for key derivation|
 |6+sl -21+sl|16|IV |Initialization Vector used for encryption|
-|22+sl-53+sl|32|HV |HMAC Value of the IV + encrypted data, length is bound to hash function (we use SHA256)|
+|22+sl-53+sl|32|HV |HMAC Value of the whole file data except this section, length is bound to hash function (we use SHA256)|
 |54+sl- EOF |- |ED |Encrypted Data|
 
-## Decrypted Data Format
+### Decrypted Data Format (decrypted ED)
 |Bytes|DefaultLength|Symbol|Description|
 |---------------|--|---|--------------------------|
 |0              |1 |rl |Length of the random padding section|
