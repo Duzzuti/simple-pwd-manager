@@ -19,7 +19,7 @@ def check_for_updates():
         return
     data = request.json()
     latestVersion = data["tag_name"]
-    if latestVersion > settings.version:
+    if settings.isVersionNewer(latestVersion):
         tmp = easygui.ynbox("There is a newer version of the program available. Do you want to download it?\n\nCurrent version: " + settings.version + "\nNew version: " + latestVersion, "Password Manager")
         if tmp:
             download_url = data["zipball_url"]
