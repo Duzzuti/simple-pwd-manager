@@ -1,5 +1,6 @@
 import os
 import easygui
+import threading
 
 import network
 import structureTools
@@ -11,7 +12,7 @@ structureTools.init()
 lastUsedFile = structureTools.getLastUsedFile(fullPath=True)
 encFiles = structureTools.getAllFilesInDir(structureTools.userDataDir, fullPath=True)
 
-network.check_for_updates()
+threading.Thread(target=network.check_for_updates).start()
 
 # SELECT AND DECRYPT FILE
 password = None
