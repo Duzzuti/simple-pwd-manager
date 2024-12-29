@@ -48,7 +48,7 @@ def decrypt_file(inputFile: str, password: str) -> bytes:
     majorVersion = fileData[0]
     minorVersion = fileData[1]
     version = "v" + str(majorVersion) + "." + str(minorVersion)
-    if version > settings.version:
+    if not settings.isFileCompatible(majorVersion, minorVersion):
         easygui.msgbox("The file was created with a newer version of the program. Please update the program to open the file. (File version: " + version + ", Program version: " + settings.version + ")", "Password Manager")
         exit()
     
