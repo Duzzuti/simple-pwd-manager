@@ -10,7 +10,11 @@ import settings
 def check_for_updates():
     # check for updates on the site https://github.com/Duzzuti/simple-pwd-manager/releases
     # if there is a newer version available, ask the user if they want to download it
-    request = requests.get("https://api.github.com/repos/Duzzuti/simple-pwd-manager/releases/latest")
+    try:
+        request = requests.get("https://api.github.com/repos/Duzzuti/simple-pwd-manager/releases/latest")
+    except requests.exceptions.RequestException:
+        print("Could not check for updates. Please check your internet connection.")
+        return
     if request.status_code != 200:
         return
     data = request.json()
@@ -19,7 +23,11 @@ def check_for_updates():
         tmp = easygui.ynbox("There is a newer version of the program available. Do you want to download it?\n\nCurrent version: " + settings.version + "\nNew version: " + latestVersion, "Password Manager")
         if tmp:
             download_url = data["zipball_url"]
-            request = requests.get(download_url, allow_redirects=True)
+            try:
+                request = requests.get(download_url, allow_redirects=True)
+            except requests.exceptions.RequestException:
+                easygui.msgbox("Could not download the update. Please check your internet connection.", "Password Manager")
+                return
             open("update.zip", "wb").write(request.content)
             # unzip the file
             with zipfile.ZipFile("update.zip", 'r') as zip_ref:
