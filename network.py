@@ -23,7 +23,7 @@ def check_for_updates(threaded=False):
         data = request.json()
         latestVersion = data["tag_name"]
         if settings.isVersionNewer(latestVersion):
-            tmp = easygui.ynbox("There is a newer version of the program available. Do you want to download it?\n\nCurrent version: " + settings.version + "\nNew version: " + latestVersion, "Password Manager")
+            tmp = easygui.ynbox("There is a newer version of the program available. Do you want to download and install it?\n\nCurrent version: " + settings.version + "\nNew version: " + latestVersion, "Password Manager")
             if tmp:
                 download_url = data["zipball_url"]
                 try:
@@ -73,7 +73,8 @@ def check_for_updates(threaded=False):
                     easygui.msgbox("Could not install the required packages, because no python installation found.\nPlease make sure python is accessible with 'py', 'python' or 'python3' and install the dependencies manually with \n'python -m pip install -r requirements.txt'", "Password Manager")
                     exit()
                 easygui.msgbox("Dependencies up to date. New version: " + latestVersion + " is now installed.\nPlease restart the program to use the new version.\nNOTE THAT UNSAVED CHANGES WILL BE LOST", "Password Manager")
-                exit()
+                # shut the main thread down
+                os._exit(0)
 
 
 
