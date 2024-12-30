@@ -2,6 +2,7 @@ import traceback
 import pandas as pd
 import easygui
 import os
+from contextlib import redirect_stderr
 from io import StringIO
 
 import settings
@@ -118,7 +119,9 @@ class Data:
     def addOther(self):
         self.requireMeta()
         while True:
-            otherName = easygui.enterbox("Enter a name for the information you want to add. This is only for your reference.", "Password Manager")
+            # Suppress cursor movement error message
+            with redirect_stderr(StringIO()):
+                otherName = easygui.enterbox("Enter a name for the information you want to add. This is only for your reference.", "Password Manager")
             if otherName is None:
                 break
             elif otherName == "":

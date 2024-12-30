@@ -1,6 +1,8 @@
 import easygui
 import os
 import tkinter as tk
+from contextlib import redirect_stderr
+import io
 
 import structureTools
 import encryption
@@ -78,7 +80,9 @@ def newFileHandler(noFileFound=False) -> tuple[str, str]:
             msg = "No encrypted password file found. Creating a new file...\nEnter file name:"
         else:
             msg = "Enter new file name:"
-        newFileName = easygui.enterbox(msg, "Password Manager", structureTools.defaultEncFileWithoutExt)
+        # Suppress cursor movement error message
+        with redirect_stderr(io.StringIO()):
+            newFileName = easygui.enterbox(msg, "Password Manager", structureTools.defaultEncFileWithoutExt)
         if newFileName is None:
             exit()
         if structureTools.verifyFileName(newFileName):
