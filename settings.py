@@ -7,7 +7,7 @@ extension = ".enc"
 # has to be in the format "vx.y.z" where x and y are chars (0-255)
 # changing the version number will lead to unexpected behavior and could lead to corrupted files
 # especially when the goal is to fake an update to be entitled to decrypt some newer version files
-version = "v0.1.4"
+version = "v0.1.5"
 
 def isFileCompatible(majorVersion, minorVersion) -> bool:
     majorVersion = int(majorVersion)
