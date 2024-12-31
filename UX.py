@@ -1,12 +1,40 @@
 import easygui
 import os
 import tkinter as tk
+from tkinter import Toplevel
 from contextlib import redirect_stderr
 import io
 
 import structureTools
 import encryption
 import settings
+
+settingsRoot = None
+
+def createSettingsWindow(root: tk.Tk):
+    global settingsRoot
+    if settingsRoot is not None:
+        settingsRoot.destroy()
+    settingsRoot = Toplevel(root)
+    settingsRoot.title("Settings")
+    settingsRoot.geometry("300x200")
+    settingsRoot.resizable(False, False)
+    settingsRoot.option_add("*Font", "Helvetica 12")
+
+    # Settings label
+    label = tk.Label(settingsRoot, text="Settings")
+    label.pack(pady=10)
+
+    # add Apply and Cancel buttons
+    applyButton = tk.Button(settingsRoot, text="Apply", command=settingsRoot.destroy)
+    applyButton.pack(side="left", padx=20, pady=10)
+    cancelButton = tk.Button(settingsRoot, text="Cancel", command=settingsRoot.destroy)
+    cancelButton.pack(side="right", padx=20, pady=10)
+
+    settingsRoot.transient(root)  # Keep popup on top of main window
+    settingsRoot.focus_set()      # Focus on popup
+    settingsRoot.grab_set()       # Make popup modal (blocks interactions with main window)
+    settingsRoot.mainloop()
 
 def createPasswordWindow(text: str, title: str, encFiles: list[str], filePath: str) -> tuple[str, str]:
     retCode = "CANCEL"
@@ -30,6 +58,9 @@ def createPasswordWindow(text: str, title: str, encFiles: list[str], filePath: s
         root.destroy()
         retCode, result = "NEW", None
     
+    def onSetting():
+        createSettingsWindow(root)
+    
     root = tk.Tk()
     root.title(title)
     # root.geometry("386x127")
@@ -50,13 +81,14 @@ def createPasswordWindow(text: str, title: str, encFiles: list[str], filePath: s
     password_entry.focus_force()
 
     # Submit Button
-    submitButton = tk.Button(root, text="OK", command=onSubmit)
+    submitButton = tk.Button(root, text="Login", command=onSubmit)
     submitButton.pack(side="left", padx=20, pady=10)
     # make submit button activate on enter
     root.bind("<Return>", lambda e: submitButton.invoke())
 
     # Cancel Button
-    cancelButton = tk.Button(root, text="Cancel", command=root.destroy)
+    tmp = tk.PhotoImage(file="settings.png").subsample(22)
+    cancelButton = tk.Button(root, text=" Settings", command=onSetting, image=tmp, compound=tk.LEFT)
     cancelButton.pack(side="left", padx=20, pady=10)
     # make cancel button activate on escape
     root.bind("<Escape>", lambda e: cancelButton.invoke())
@@ -69,6 +101,7 @@ def createPasswordWindow(text: str, title: str, encFiles: list[str], filePath: s
     newFileButton = tk.Button(root, text="New File", command=onNewFile)
     newFileButton.pack(side="right", padx=20, pady=10)
 
+    root.resizable(False, False)
     root.mainloop()
     return (retCode, result)
 
