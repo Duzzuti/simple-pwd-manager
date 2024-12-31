@@ -2,7 +2,7 @@ import os
 
 def installDependencies():
     try:
-        pythonNames = ["py", "python", "python3"]
+        pythonNames = ["python", "py", "python3"]
         for name in pythonNames:
             # download new dependencies
             if os.system(name + " -m pip install -r requirements.txt") == 0:
