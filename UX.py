@@ -87,7 +87,7 @@ def createPasswordWindow(text: str, title: str, encFiles: list[str], filePath: s
     root.bind("<Return>", lambda e: submitButton.invoke())
 
     # Cancel Button
-    tmp = tk.PhotoImage(file="settings.png").subsample(22)
+    tmp = tk.PhotoImage(file="assets/settings.png").subsample(22)
     cancelButton = tk.Button(root, text=" Settings", command=onSetting, image=tmp, compound=tk.LEFT)
     cancelButton.pack(side="left", padx=20, pady=10)
     # make cancel button activate on escape
