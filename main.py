@@ -1,10 +1,17 @@
-import os
-import easygui
+try:
+    import os
+    import easygui
 
-import network
-import structureTools
-from data import Data
-import UX
+    import network
+    import structureTools
+    from data import Data
+    import UX
+except ImportError:
+    print("There are missing dependencies. Installing them now...")
+    import dependencies
+    if(dependencies.installDependencies()):
+        input("Please restart the program. Press enter to exit...")
+    os._exit(0)
 
 # init the file structure and exits if there are any problems
 structureTools.init()

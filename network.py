@@ -7,7 +7,6 @@ import threading
 
 import settings
 
-
 def check_for_updates(threaded=False):
     def _check_for_updates():
         # check for updates on the site https://github.com/Duzzuti/simple-pwd-manager/releases
@@ -65,18 +64,16 @@ def check_for_updates(threaded=False):
                 shutil.rmtree("update")
                 easygui.msgbox("Update successful. The program will now install new dependencies.", "Password Manager")
                 # download new dependencies
-                pythonNames = ["py", "python", "python3"]
+                pythonNames = ["python", "py", "python3"]
                 for name in pythonNames:
                     if os.system(name + " -m pip install -r requirements.txt") == 0:
                         break
                 else:
-                    easygui.msgbox("Could not install the required packages, because no python installation found.\nPlease make sure python is accessible with 'py', 'python' or 'python3' and install the dependencies manually with \n'python -m pip install -r requirements.txt'", "Password Manager")
+                    easygui.msgbox("Could not install the required packages, because no python installation found.\nPlease make sure python is accessible with 'py', 'python' or 'python3' or install the dependencies manually with \n'python -m pip install -r requirements.txt'", "Password Manager")
                     exit()
                 easygui.msgbox("Dependencies up to date. New version: " + latestVersion + " is now installed.\nPlease restart the program to use the new version.\nNOTE THAT UNSAVED CHANGES WILL BE LOST", "Password Manager")
                 # shut the main thread down
                 os._exit(0)
-
-
 
     if threaded:
         t = threading.Thread(target=_check_for_updates)
