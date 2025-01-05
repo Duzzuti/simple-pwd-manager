@@ -2,8 +2,7 @@ import easygui
 import os
 import tkinter as tk
 from tkinter import Toplevel
-from contextlib import redirect_stderr
-import io
+from basic_UX import enterBox, ynBox
 
 import structureTools
 import encryption
@@ -114,9 +113,7 @@ def newFileHandler(noFileFound=False) -> tuple[str, str]:
             msg = language.CREATE_NEW_FILE_NO_FILE_FOUND
         else:
             msg = language.CREATE_NEW_FILE_ENTER_NEW_FILE_NAME
-        # Suppress cursor movement error message
-        with redirect_stderr(io.StringIO()):
-            newFileName = easygui.enterbox(msg, "Password Manager", structureTools.defaultEncFileWithoutExt)
+        newFileName = enterBox(msg, "Password Manager", structureTools.defaultEncFileWithoutExt)
         if newFileName is None:
             exit()
         if structureTools.verifyFileName(newFileName):
@@ -139,16 +136,16 @@ def newFileHandler(noFileFound=False) -> tuple[str, str]:
     tmpUserInp = easygui.msgbox(language.CREATE_NEW_FILE_REMEMBER_DISCLAIMER, "Password Manager")
     if tmpUserInp is None:
         exit()
-    showPwd = easygui.ynbox(language.CREATE_NEW_FILE_SHOW_PASSWORD_PROMPT, "Password Manager")
+    showPwd = ynBox(language.CREATE_NEW_FILE_SHOW_PASSWORD_PROMPT, "Password Manager")
     if showPwd is None:
         exit()
     if showPwd:
         easygui.msgbox(language.YOUR_PASSWORD_IS + password, "Password Manager")
-    userPwdSafeConfirm = easygui.ynbox(language.CREATE_NEW_FILE_CONFIRM_PASSWORD_SAVED, "Password Manager")
+    userPwdSafeConfirm = ynBox(language.CREATE_NEW_FILE_CONFIRM_PASSWORD_SAVED, "Password Manager")
     while not userPwdSafeConfirm:
         if userPwdSafeConfirm is None:
             exit()
-        userPwdSafeConfirm = easygui.ynbox(language.CREATE_NEW_FILE_CONFIRM_PASSWORD_SAVED_AGAIN, "Password Manager")
+        userPwdSafeConfirm = ynBox(language.CREATE_NEW_FILE_CONFIRM_PASSWORD_SAVED_AGAIN, "Password Manager")
     print(language.CREATE_NEW_FILE_CREATING)
     structureTools.createEncryptedFile(newFileName, password)
     easygui.msgbox(language.CREATE_NEW_FILE_WELCOME1 + newFileName + language.CREATE_NEW_FILE_WELCOME2, "Password Manager")

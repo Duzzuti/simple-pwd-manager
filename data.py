@@ -2,12 +2,12 @@ import traceback
 import pandas as pd
 import easygui
 import os
-from contextlib import redirect_stderr
 from io import StringIO
 
 import settings
 from settings import language
 import encryption
+from basic_UX import enterBox, ynBox
 from sys import exit
 
 class Data:
@@ -114,7 +114,7 @@ class Data:
                     usernames = self.pwd[self.pwd["Website"] == dataAddPwd[0]]["Username"].values
                     emailsPlusUsernames = "\n".join([language.EMAIL + ":" + emails[i] + ", " + language.USERNAME + ":" + usernames[i] for i in range(len(emails))])
 
-                    userConfirm = easygui.ynbox(language.PASSWORD_ENTRY_ALREADY_EXISTS_MESSAGE +
+                    userConfirm = ynBox(language.PASSWORD_ENTRY_ALREADY_EXISTS_MESSAGE +
                                                 language.CURRENT_LOGINS_FOR + dataAddPwd[0] + ":\n" +
                                                 emailsPlusUsernames + "\n" + language.NEW_INFORMATION + ":\n" +
                                                 language.EMAIL + ":" + dataAddPwd[1] + ", " + language.USERNAME + ":" + dataAddPwd[2] + "\n", "Password Manager")
@@ -127,9 +127,7 @@ class Data:
     def addOther(self):
         self.requireMeta()
         while True:
-            # Suppress cursor movement error message
-            with redirect_stderr(StringIO()):
-                otherName = easygui.enterbox(language.ADD_INFO_TITLE, "Password Manager")
+            otherName = enterBox(language.ADD_INFO_TITLE, "Password Manager")
             if otherName is None:
                 break
             elif otherName == "":

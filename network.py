@@ -7,6 +7,7 @@ import threading
 
 import settings
 from settings import language
+from basic_UX import ynBox
 
 def check_for_updates(threaded=False):
     def _check_for_updates():
@@ -23,7 +24,7 @@ def check_for_updates(threaded=False):
         data = request.json()
         latestVersion = data["tag_name"]
         if settings.isVersionNewer(latestVersion):
-            tmp = easygui.ynbox(language.NEWER_VERSION_AVAILABLE1 + settings.version + language.NEWER_VERSION_AVAILABLE2 + latestVersion, "Password Manager")
+            tmp = ynBox(language.NEWER_VERSION_AVAILABLE1 + settings.version + language.NEWER_VERSION_AVAILABLE2 + latestVersion, "Password Manager")
             if tmp:
                 download_url = data["zipball_url"]
                 try:

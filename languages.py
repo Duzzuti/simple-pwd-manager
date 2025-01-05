@@ -10,10 +10,12 @@ class Language():
     DELETE_CHANGE_LOGIN = None
     EXIT = None
     NEW_FILE = None
+    NO = None
     REQUIRED = None
     SHOW_LOGINS = None
     SHOW_OTHER = None
     SKIP = None
+    YES = None
 
     # NAMES
     EMAIL = None
@@ -114,10 +116,12 @@ class English(Language):
     DELETE_CHANGE_LOGIN = "Delete/Change login"
     EXIT = "Exit"
     NEW_FILE = "New File"
+    NO = "No"
     REQUIRED = "(required)"
     SHOW_LOGINS = "Show logins"
     SHOW_OTHER = "Show other"
     SKIP = "Skip"
+    YES = "Yes"
 
     # NAMES
     EMAIL = "Email"
@@ -218,10 +222,12 @@ class German(Language):
     DELETE_CHANGE_LOGIN = "Anmeldedaten löschen/ändern"
     EXIT = "Beenden"
     NEW_FILE = "Neue Datei"
+    NO = "Nein"
     REQUIRED = "(erforderlich)"
     SHOW_LOGINS = "Anmeldedaten anzeigen"
     SHOW_OTHER = "Sonstiges anzeigen"
     SKIP = "Überspringen"
+    YES = "Ja"
 
     # NAMES
     EMAIL = "Email"
