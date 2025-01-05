@@ -1,3 +1,7 @@
+import languages
+
+language = languages.loadLanguage()
+
 n = 18      # affects time and memory (is used as 2**n)
 r = 32      # affects memory and with n also time
 p = 1       # affects time

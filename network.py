@@ -6,6 +6,7 @@ import shutil
 import threading
 
 import settings
+from settings import language
 
 def check_for_updates(threaded=False):
     def _check_for_updates():
@@ -14,21 +15,21 @@ def check_for_updates(threaded=False):
         try:
             request = requests.get("https://api.github.com/repos/Duzzuti/simple-pwd-manager/releases/latest")
         except requests.exceptions.RequestException:
-            print("Could not check for updates. Please check your internet connection.")
+            print(language.ERR_UPDATE_REQUEST_FAILED)
             return
         if request.status_code != 200:
-            print("Could not check for updates. Got status code: " + str(request.status_code))
+            print(language.ERR_UPDATE_INVALID_STATUS_CODE + str(request.status_code))
             return
         data = request.json()
         latestVersion = data["tag_name"]
         if settings.isVersionNewer(latestVersion):
-            tmp = easygui.ynbox("There is a newer version of the program available. Do you want to download and install it?\n\nCurrent version: " + settings.version + "\nNew version: " + latestVersion, "Password Manager")
+            tmp = easygui.ynbox(language.NEWER_VERSION_AVAILABLE1 + settings.version + language.NEWER_VERSION_AVAILABLE2 + latestVersion, "Password Manager")
             if tmp:
                 download_url = data["zipball_url"]
                 try:
                     request = requests.get(download_url, allow_redirects=True)
                 except requests.exceptions.RequestException:
-                    easygui.msgbox("Could not download the update. Please check your internet connection.", "Password Manager")
+                    easygui.msgbox(language.ERR_UPDATE_DOWNLOAD_FAILED, "Password Manager")
                     return
                 open("update.zip", "wb").write(request.content)
                 # unzip the file
@@ -36,7 +37,7 @@ def check_for_updates(threaded=False):
                     zip_ref.extractall("update")
                 updateDirs = os.listdir("update")
                 if len(updateDirs) != 1:
-                    easygui.msgbox("Some error occurred while updating. There was more than one directory downloaded. Please update manually.", "Password Manager")
+                    easygui.msgbox(language.ERR_UPDATE_MULTIPLE_DIRS, "Password Manager")
                     os.remove("update.zip")
                     shutil.rmtree("update")
                     return
@@ -55,23 +56,23 @@ def check_for_updates(threaded=False):
                             else:
                                 os.remove(item)
                         except:
-                            easygui.msgbox("Some error occurred while updating. Following items could not be removed: " + item, "Password Manager")
+                            easygui.msgbox(language.ERR_UPDATE_COULD_NOT_REMOVE_ITEM + item, "Password Manager")
                             shutil.rmtree("update")
                             os.remove("update.zip")
                             return
 
                 shutil.copytree("update/simple-pwd-manager", ".", dirs_exist_ok=True)
                 shutil.rmtree("update")
-                easygui.msgbox("Update successful. The program will now install new dependencies.", "Password Manager")
+                easygui.msgbox(language.UPDATE_SUCCESSFUL_INSTALL_DEPENDENCIES, "Password Manager")
                 # download new dependencies
                 pythonNames = ["python", "py", "python3"]
                 for name in pythonNames:
                     if os.system(name + " -m pip install -r requirements.txt") == 0:
                         break
                 else:
-                    easygui.msgbox("Could not install the required packages, because no python installation found.\nPlease make sure python is accessible with 'py', 'python' or 'python3' or install the dependencies manually with \n'python -m pip install -r requirements.txt'", "Password Manager")
+                    easygui.msgbox(language.ERR_DEPENDENCIES_DOWNLOAD_FAILED, "Password Manager")
                     exit()
-                easygui.msgbox("Dependencies up to date. New version: " + latestVersion + " is now installed.\nPlease restart the program to use the new version.\nNOTE THAT UNSAVED CHANGES WILL BE LOST", "Password Manager")
+                easygui.msgbox(language.UPDATE_SUCCESSFUL1 + latestVersion + language.UPDATE_SUCCESSFUL2, "Password Manager")
                 # shut the main thread down
                 os._exit(0)
 

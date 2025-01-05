@@ -1,4 +1,6 @@
 try:
+    from settings import language
+
     import os
     import easygui
 
@@ -7,10 +9,10 @@ try:
     from data import Data
     import UX
 except ImportError:
-    print("There are missing dependencies. Installing them now...")
+    print(language.ERR_MISSING_DEPENDENCIES)
     import dependencies
     if(dependencies.installDependencies()):
-        input("Please restart the program. Press enter to exit...")
+        input(language.RESTART_ENTER_TO_EXIT)
     os._exit(0)
 
 # init the file structure and exits if there are any problems
@@ -37,7 +39,7 @@ elif os.path.isfile(lastUsedFile):
     filePath, password, byteData = UX.getPassword(filePath, encFiles)
 # last used file not found
 else:
-    tmp = easygui.msgbox("The last used file ("+lastUsedFile+") was not found. Copy the file back to the location or choose an other file to open", "Password Manager")
+    tmp = easygui.msgbox(language.ERR_LAST_USED_FILE_NOT_FOUND1 + lastUsedFile + language.ERR_LAST_USED_FILE_NOT_FOUND2, "Password Manager")
     if tmp is None:
         exit()
     filePath = UX.chooseEncFile(encFiles)
@@ -48,24 +50,25 @@ if byteData == None:
     byteData = Data().byteData
 
 if not byteData:
-    easygui.msgbox("The password file could not be decrypted. Please try again.", "Password Manager")
+    easygui.msgbox(language.ERR_FILE_COULD_NOT_BE_DECRYPTED, "Password Manager")
     exit()
 data = Data.fromBytes(byteData)
 data.setMeta(filePath, password)
 
 while True:
-    user_choice = easygui.buttonbox("Choose an action: ", "Password Manager", ["Show logins", "Add login", "Show other", "Add other", "Delete/Change login", "Exit"])
-    if user_choice == "Show logins":
+    user_choice = easygui.buttonbox(language.CHOOSE_ACTION, "Password Manager", [
+        language.SHOW_LOGINS, language.ADD_LOGIN, language.SHOW_OTHER, language.ADD_OTHER, language.DELETE_CHANGE_LOGIN, language.EXIT])
+    if user_choice == language.SHOW_LOGINS:
         data.showPwd()
-    elif user_choice == "Add login":
+    elif user_choice == language.ADD_LOGIN:
         data.addPwd()
-    # todo show other information in good format
-    elif user_choice == "Show other":
+    # TODO show other information in good format
+    elif user_choice == language.SHOW_OTHER:
         data.showOther()
-    # todo handle multiple entries with the same name
-    elif user_choice == "Add other":
+    # TODO handle multiple entries with the same name
+    elif user_choice == language.ADD_OTHER:
         data.addOther()
-    elif user_choice == "Delete/Change login":
+    elif user_choice == language.DELETE_CHANGE_LOGIN:
         data.changeData()
-    elif user_choice == "Exit" or user_choice is None:
+    elif user_choice == language.EXIT or user_choice is None:
         break

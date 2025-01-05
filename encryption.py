@@ -10,13 +10,14 @@ import traceback
 import easygui
 
 import settings
+from settings import language
 
 # Function to convert an integer to bytes in a standardized way
 def intToBytes(n: int, numBytes: int) -> bytes:
     try:
         return n.to_bytes(numBytes, byteorder="big", signed=False)
     except OverflowError:
-        raise OverflowError("Some settings were set out of bounds.")
+        raise OverflowError(language.ERR_SETTINGS_OUT_OF_BOUNDS)
 
 # Function to generate two keys from a password
 def generate_keys(password: str, salt: bytes, n = settings.n, r = settings.r, p = settings.p) -> tuple[bytes, bytes]:
@@ -32,7 +33,7 @@ def generate_keys(password: str, salt: bytes, n = settings.n, r = settings.r, p 
         keyBytes = kdf.derive(password.encode())
         return keyBytes[:32], keyBytes[32:]
     except Exception:
-        print("Error while generating keys, probably due to invalid settings or corrupted data.")
+        print(language.ERR_KEY_GENERATION)
         traceback.print_exc()
         exit()
 
@@ -42,22 +43,22 @@ def decrypt_file(inputFile: str, password: str) -> bytes:
         fileData = f.read()
     
     if len(fileData) == 0:
-        raise ValueError("File is empty.")
+        raise ValueError(language.ERR_FILE_EMPTY)
     
     # Extract version, salt, n, r and p
     majorVersion = fileData[0]
     minorVersion = fileData[1]
     version = "v" + str(majorVersion) + "." + str(minorVersion)
     if not settings.isFileCompatible(majorVersion, minorVersion):
-        easygui.msgbox("The file was created with a newer version of the program. Please update the program to open the file. (File version: " + version + ", Program version: " + settings.version + ")", "Password Manager")
+        easygui.msgbox(language.ERR_PROGRAM_OUTDATED1 + version + language.ERR_PROGRAM_OUTDATED2 + settings.version + ")", "Password Manager")
         exit()
     
     saltLen = fileData[2]
     if saltLen > len(fileData) - 1:
-        raise ValueError("Invalid file format: Salt length is greater than remaining file size.")
+        raise ValueError(language.ERR_FILE_FORMAT_INVALID_SALT)
     salt = fileData[3:saltLen+3]  # Extract the salt
     if len(fileData) - saltLen - 3 < 3:
-        raise ValueError("Invalid file format: Not enough data for n, r and p arguments.")
+        raise ValueError(language.ERR_FILE_FORMAT_INVALID_PARAMETERS)
     readN = fileData[saltLen+3]
     readR = fileData[saltLen+4]
     readP = fileData[saltLen+5]
@@ -89,7 +90,7 @@ def decrypt_file(inputFile: str, password: str) -> bytes:
         return unpadder.update(paddedData) + unpadder.finalize()
 
     except Exception:
-        print("Error while decrypting file: ")
+        print(language.ERR_WHILE_DECRYPTING_FILE)
         traceback.print_exc()
         exit()
 

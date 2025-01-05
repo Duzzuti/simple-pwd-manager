@@ -6,6 +6,7 @@ from contextlib import redirect_stderr
 from io import StringIO
 
 import settings
+from settings import language
 import encryption
 from sys import exit
 
@@ -37,7 +38,7 @@ class Data:
             data.pwd = pd.read_csv(StringIO(byteData[pos:pos+lenPwd].decode()), index_col=False)
             data.other = pd.read_csv(StringIO(byteData[pos+lenPwd:].decode()), index_col=False)
         except IndexError:
-            easygui.msgbox("The file is corrupted. The format is not as expected.", "Password Manager")
+            easygui.msgbox(language.ERR_FILE_CORRUPTED_FORMAT, "Password Manager")
             traceback.print_exc()
             exit()
         return data
@@ -48,7 +49,7 @@ class Data:
     
     def requireMeta(self):
         if self.filepath is None or self.password is None:
-            easygui.msgbox("Meta data is required for this action.", "Password Manager")
+            easygui.msgbox(language.ERR_META_REQUIRED, "Password Manager")
             exit()
     
     def calculateByteData(self):
@@ -74,42 +75,49 @@ class Data:
     def showPwd(self):
         # print full df without index sorted by website
         if len(self.pwd) == 0:
-            easygui.msgbox("No logins found.", "Password Manager")
+            easygui.msgbox(language.NO_LOGINS_FOUND, "Password Manager")
         else:
-            print(self.pwd.sort_values(by="Website").rename(columns={"Website": "Website/App"}, inplace=False).to_string(index=False))
-            input("Press Enter to clear...")
+            print(self.pwd.sort_values(by="Website").rename(columns={
+                "Website": language.WEBSITE_APP, 
+                "Email": language.EMAIL, 
+                "Username": language.USERNAME, 
+                "Password": language.PASSWORD
+                }, inplace=False).to_string(index=False))
+            input(language.ENTER_TO_CLEAR)
             os.system('cls' if os.name == 'nt' else 'clear')
     
     def showOther(self):
         if len(self.other) == 0:
-            easygui.msgbox("No other information found.", "Password Manager")
+            easygui.msgbox(language.NO_OTHER_INFO_FOUND, "Password Manager")
         else:
-            print(self.other.sort_values(by="Name").to_string(index=False))
-            input("Press Enter to clear...")
+            print(self.other.sort_values(by="Name").rename(columns={
+                "Name": language.INFO_TITLE,
+                "Info": language.INFO_CONTENT
+                }, inplace=False).to_string(index=False))
+            input(language.ENTER_TO_CLEAR)
             os.system('cls' if os.name == 'nt' else 'clear')
     
     def addPwd(self):
         self.requireMeta()
         # asks the user for new password data and adds it to the Dataframe
         while True:
-            dataAddPwd = easygui.multenterbox("Enter the following information: ", "Password Manager", ["Website/App (required)", "Email", "Username", "Password (required)"])
+            dataAddPwd = easygui.multenterbox(language.ENTER_FOLLOWING, "Password Manager", 
+                [language.WEBSITE_APP + " " + language.REQUIRED, language.EMAIL, language.USERNAME, language.PASSWORD + " " + language.REQUIRED])
             if dataAddPwd is None:
                 break
             elif dataAddPwd[0] == "" or dataAddPwd[3] == "":
-                easygui.msgbox("A website/app and a password is required.", "Password Manager")
+                easygui.msgbox(language.WEBSITE_PASSWORD_REQUIRED, "Password Manager")
             else:
                 if dataAddPwd[0] in self.pwd["Website"].values:
                     # get all emails and usernames as strings
                     emails = self.pwd[self.pwd["Website"] == dataAddPwd[0]]["Email"].values
                     usernames = self.pwd[self.pwd["Website"] == dataAddPwd[0]]["Username"].values
-                    emailsPlusUsernames = "\n".join(["Mail:" + emails[i] + ", User:" + usernames[i] for i in range(len(emails))])
+                    emailsPlusUsernames = "\n".join([language.EMAIL + ":" + emails[i] + ", " + language.USERNAME + ":" + usernames[i] for i in range(len(emails))])
 
-                    userConfirm = easygui.ynbox("An entry for this website/app already exists. Do you want to add the information as an other login? (No does NOT safe the new information). \n" + \
-                                                "If you want to change old information (e.g. a single password) please use the 'Change password' section of the main menu.\n\n" + \
-                                                "Current information for " + dataAddPwd[0] + ":\n" +
-                                                emailsPlusUsernames + \
-                                                "\nNew information:\n" + \
-                                                "Mail:" + dataAddPwd[1] + ", User:" + dataAddPwd[2] + "\n", "Password Manager")
+                    userConfirm = easygui.ynbox(language.PASSWORD_ENTRY_ALREADY_EXISTS_MESSAGE +
+                                                language.CURRENT_LOGINS_FOR + dataAddPwd[0] + ":\n" +
+                                                emailsPlusUsernames + "\n" + language.NEW_INFORMATION + ":\n" +
+                                                language.EMAIL + ":" + dataAddPwd[1] + ", " + language.USERNAME + ":" + dataAddPwd[2] + "\n", "Password Manager")
                     if not userConfirm:
                         continue
                 self.addPwdToData(dataAddPwd[0], dataAddPwd[1], dataAddPwd[2], dataAddPwd[3])
@@ -121,18 +129,18 @@ class Data:
         while True:
             # Suppress cursor movement error message
             with redirect_stderr(StringIO()):
-                otherName = easygui.enterbox("Enter a name for the information you want to add. This is only for your reference.", "Password Manager")
+                otherName = easygui.enterbox(language.ADD_INFO_TITLE, "Password Manager")
             if otherName is None:
                 break
             elif otherName == "":
-                easygui.msgbox("A name is required.", "Password Manager")
+                easygui.msgbox(language.INFO_TITLE_REQUIRED, "Password Manager")
                 continue
             while True:
-                otherInfo = easygui.textbox("Store any information you want for " + otherName, "Password Manager")
+                otherInfo = easygui.textbox(language.STORE_INFORMATION_FOR + otherName, "Password Manager")
                 if otherInfo is None:
                     break
                 elif otherInfo == "":
-                    easygui.msgbox("The information is required.", "Password Manager")
+                    easygui.msgbox(language.INFO_CONTENT_REQUIRED, "Password Manager")
                     continue
                 else:
                     self.addOtherToData(otherName, otherInfo)
@@ -143,24 +151,26 @@ class Data:
     def changeData(self):
         self.requireMeta()
         if len(self.pwd) == 0:
-            easygui.msgbox("No logins found.", "Password Manager")
+            easygui.msgbox(language.NO_LOGINS_FOUND, "Password Manager")
         elif len(self.pwd) == 1:
             choice = [self.pwd["Website"].values[0]]
         else:
-            choice = easygui.multchoicebox("Choose the websites/apps to delete or change the information for: ", "Password Manager", self.pwd["Website"].sort_values().tolist())
+            choice = easygui.multchoicebox(language.CHOOSE_WEBSITE_TO_CHANGE_DELETE, "Password Manager", self.pwd["Website"].sort_values().tolist())
         if choice is not None:
             for i in choice:
-                choiceAction = easygui.buttonbox("Choose an action for " + i + ": ", "Password Manager", ["Delete", "Change Information", "Skip"])
-                if choiceAction == "Skip" or choiceAction is None:
+                choiceAction = easygui.buttonbox(language.CHOOSE_ACTION_FOR + i + ": ", "Password Manager", [language.DELETE, language.CHANGE_INFORMATION, language.SKIP])
+                if choiceAction == language.SKIP or choiceAction is None:
                     continue
-                elif choiceAction == "Delete":
+                elif choiceAction == language.DELETE:
                     self.pwd = self.pwd[self.pwd["Website"] != i]
                     self.calculateByteData()
-                elif choiceAction == "Change Information":
+                elif choiceAction == language.CHANGE_INFORMATION:
                     while True:
-                        newData = easygui.multenterbox("Enter the following information: ", "Password Manager", ["Website/App (required)", "Email", "Username", "Password (required)"], [i, self.pwd[self.pwd["Website"] == i]["Email"].values[0], self.pwd[self.pwd["Website"] == i]["Username"].values[0], self.pwd[self.pwd["Website"] == i]["Password"].values[0]])
+                        newData = easygui.multenterbox(language.ENTER_FOLLOWING, "Password Manager", 
+                            [language.WEBSITE_APP + " " + language.REQUIRED, language.EMAIL, language.USERNAME, language.PASSWORD + " " + language.REQUIRED], 
+                            [i, self.pwd[self.pwd["Website"] == i]["Email"].values[0], self.pwd[self.pwd["Website"] == i]["Username"].values[0], self.pwd[self.pwd["Website"] == i]["Password"].values[0]])
                         if newData[0] == "" or newData[3] == "":
-                            easygui.msgbox("A website/app and a password is required.", "Password Manager")
+                            easygui.msgbox(language.WEBSITE_PASSWORD_REQUIRED, "Password Manager")
                         else:
                             break
                     if newData is not None:
