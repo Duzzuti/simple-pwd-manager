@@ -1,5 +1,7 @@
 import os
 
+from settings import language
+
 def installDependencies():
     try:
         pythonNames = ["python", "py", "python3"]
@@ -8,12 +10,12 @@ def installDependencies():
             if os.system(name + " -m pip install -r requirements.txt") == 0:
                 break
         else:
-            print("Could not install the required packages, because no python installation found.\nPlease make sure python is accessible with 'py', 'python' or 'python3' or install the dependencies manually with \n'python -m pip install -r requirements.txt'")
-            input("Press enter to exit...")
+            print(language.ERR_DEPENDENCIES_DOWNLOAD_FAILED)
+            input(language.ENTER_TO_EXIT)
             return False
-        print("Dependencies installed. You can now run the program.")
+        print(language.DEPENDENCIES_INSTALLED)
     except Exception as e:
         print(e)
-        input("An error occurred. Press enter to exit...")
+        input(language.ERR_ENTER_TO_EXIT)
         return False
     return True

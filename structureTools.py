@@ -4,6 +4,7 @@ import easygui
 import encryption
 from data import Data
 import settings
+from settings import language
 
 userDataDir = "userData"
 defaultEncFileWithoutExt = "pEnc"
@@ -13,7 +14,7 @@ def init():
         os.mkdir(userDataDir)
     userDataValid = checkUserDataValidity()
     if not userDataValid[0]:
-        easygui.msgbox("The userData directory contains files or directories that should not be there (namely: "+ userDataValid[1] +"). Please remove them.", "Password Manager")
+        easygui.msgbox(language.ERR_USERDATA_CONTAINS_INVALID_FILES1 + userDataValid[1] + language.ERR_USERDATA_CONTAINS_INVALID_FILES2, "Password Manager")
         exit()
 
 def saveLastUsedFile(file):
@@ -31,15 +32,15 @@ def getLastUsedFile(fullPath = False) -> str:
 def verifyFileName(fileName) -> bool:
     validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
     if not fileName:
-        easygui.msgbox("The file name cannot be empty.", "Password Manager")
+        easygui.msgbox(language.ERR_FILE_NAME_CANNOT_BE_EMPTY, "Password Manager")
         return False
     for char in fileName:
         if char not in validChars:
-            easygui.msgbox("The file name contains invalid characters ('"+char+"'). Only letters, numbers and underscores are allowed.", "Password Manager")
+            easygui.msgbox(language.ERR_FILE_NAME_CONTAINS_INVALID_CHARACTERS1 + char + language.ERR_FILE_NAME_CONTAINS_INVALID_CHARACTERS2, "Password Manager")
             return False
     # check if file already exists
     if os.path.isfile(os.path.join(userDataDir, fileName + settings.extension)):
-        easygui.msgbox("A file with the name '"+fileName+"' already exists. Please choose another name.", "Password Manager")
+        easygui.msgbox(language.ERR_FILE_NAME_ALREADY_EXISTS1 + fileName + language.ERR_FILE_NAME_ALREADY_EXISTS2, "Password Manager")
         return False
     return True
 

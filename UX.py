@@ -2,33 +2,56 @@ import easygui
 import os
 import tkinter as tk
 from tkinter import Toplevel
-from contextlib import redirect_stderr
-import io
+from basic_UX import enterBox, ynBox
 
 import structureTools
 import encryption
 import settings
+from settings import language
 
 settingsRoot = None
 
 def createSettingsWindow(root: tk.Tk):
     global settingsRoot
+    def onApply():
+        if languageVar.get() == language.LANGUAGE:
+            settingsRoot.destroy()
+            return
+        settings.setLanguage(languageVar.get())
+        settingsRoot.destroy()
+        # restart the program
+        easygui.msgbox(language.LANGUAGE_CHANGE_RESTART)
+        os._exit(0)
     if settingsRoot is not None:
         settingsRoot.destroy()
     settingsRoot = Toplevel(root)
-    settingsRoot.title("Settings")
+    settingsRoot.title(language.SETTINGS)
     settingsRoot.geometry("300x200")
     settingsRoot.resizable(False, False)
     settingsRoot.option_add("*Font", "Helvetica 12")
 
     # Settings label
-    label = tk.Label(settingsRoot, text="Settings")
+    label = tk.Label(settingsRoot, text=language.SETTINGS)
     label.pack(pady=10)
 
+    # Language setting
+    language_setting = tk.Frame(settingsRoot)
+
+    label = tk.Label(language_setting, text=language.SETTINGS_LANGUAGE)
+    label.pack(side="left", pady=10)
+
+    # Language selection
+    languageVar = tk.StringVar(language_setting)
+    languageVar.set(language.LANGUAGE)
+    languageMenu = tk.OptionMenu(language_setting, languageVar, *language.Languages)
+    languageMenu.pack(side="right", pady=10)
+
+    language_setting.pack(pady=10)
+
     # add Apply and Cancel buttons
-    applyButton = tk.Button(settingsRoot, text="Apply", command=settingsRoot.destroy)
+    applyButton = tk.Button(settingsRoot, text=language.APPLY, command=onApply)
     applyButton.pack(side="left", padx=20, pady=10)
-    cancelButton = tk.Button(settingsRoot, text="Cancel", command=settingsRoot.destroy)
+    cancelButton = tk.Button(settingsRoot, text=language.CANCEL, command=settingsRoot.destroy)
     cancelButton.pack(side="right", padx=20, pady=10)
 
     settingsRoot.transient(root)  # Keep popup on top of main window
@@ -50,7 +73,7 @@ def createPasswordWindow(text: str, title: str, encFiles: list[str], filePath: s
         root.destroy()
         newPath = chooseEncFile(encFiles, preselectFile=filePath)
         if len(encFiles) == 1:
-            easygui.msgbox("No other files found in directory (" + structureTools.userDataDir + "/)", "Password Manager")
+            easygui.msgbox(language.ERR_NO_OTHER_USER_DATA_FILES_FOUND + structureTools.userDataDir + "/)", "Password Manager")
         retCode, result = "CHANGE", newPath
     
     def onNewFile():
@@ -81,24 +104,24 @@ def createPasswordWindow(text: str, title: str, encFiles: list[str], filePath: s
     password_entry.focus_force()
 
     # Submit Button
-    submitButton = tk.Button(root, text="Login", command=onSubmit)
+    submitButton = tk.Button(root, text=language.LOGIN, command=onSubmit)
     submitButton.pack(side="left", padx=20, pady=10)
     # make submit button activate on enter
     root.bind("<Return>", lambda e: submitButton.invoke())
 
     # Cancel Button
     tmp = tk.PhotoImage(file="assets/settings.png").subsample(22)
-    cancelButton = tk.Button(root, text=" Settings", command=onSetting, image=tmp, compound=tk.LEFT)
+    cancelButton = tk.Button(root, text=" "+language.SETTINGS, command=onSetting, image=tmp, compound=tk.LEFT)
     cancelButton.pack(side="left", padx=20, pady=10)
     # make cancel button activate on escape
     root.bind("<Escape>", lambda e: cancelButton.invoke())
 
     # Change File Button
-    changeFileButton = tk.Button(root, text="Change File", command=onChangeFile)
+    changeFileButton = tk.Button(root, text=language.CHANGE_FILE, command=onChangeFile)
     changeFileButton.pack(side="right", padx=20, pady=10)
 
     # New File Button
-    newFileButton = tk.Button(root, text="New File", command=onNewFile)
+    newFileButton = tk.Button(root, text=language.NEW_FILE, command=onNewFile)
     newFileButton.pack(side="right", padx=20, pady=10)
 
     root.resizable(False, False)
@@ -110,47 +133,45 @@ def createPasswordWindow(text: str, title: str, encFiles: list[str], filePath: s
 def newFileHandler(noFileFound=False) -> tuple[str, str]:
     while True:
         if noFileFound:
-            msg = "No encrypted password file found. Creating a new file...\nEnter file name:"
+            msg = language.CREATE_NEW_FILE_NO_FILE_FOUND
         else:
-            msg = "Enter new file name:"
-        # Suppress cursor movement error message
-        with redirect_stderr(io.StringIO()):
-            newFileName = easygui.enterbox(msg, "Password Manager", structureTools.defaultEncFileWithoutExt)
+            msg = language.CREATE_NEW_FILE_ENTER_NEW_FILE_NAME
+        newFileName = enterBox(msg, "Password Manager", structureTools.defaultEncFileWithoutExt)
         if newFileName is None:
             exit()
         if structureTools.verifyFileName(newFileName):
             break
     while True:
-        password = easygui.passwordbox("Enter a master password for the file: ", "Password Manager")
+        password = easygui.passwordbox(language.CREATE_NEW_FILE_ENTER_PASSWORD, "Password Manager")
         if password is None:
             exit()
         if not password:
-            easygui.msgbox("A non empty password is required.", "Password Manager")
+            easygui.msgbox(language.ERR_NON_EMPTY_PASSWORD_REQUIRED, "Password Manager")
             continue
         # confirm password
-        passwordConfirm = easygui.passwordbox("Confirm the master password: ", "Password Manager")
+        passwordConfirm = easygui.passwordbox(language.CREATE_NEW_FILE_CONFIRM_PASSWORD, "Password Manager")
         if passwordConfirm is None:
             exit()
         if(password == passwordConfirm):
             break
-        easygui.msgbox("Passwords do not match. Try again.", "Password Manager")
+        easygui.msgbox(language.ERR_PASSWORDS_DO_NOT_MATCH, "Password Manager")
 
-    tmpUserInp = easygui.msgbox("MAKE SURE TO REMEMBER THE PASSWORD. THERE IS NO WAY TO RECOVER IT.\nIF YOU FORGET THE PASSWORD, ALL DATA IN THE FILE WILL BE LOST.", "Password Manager")
+    tmpUserInp = easygui.msgbox(language.CREATE_NEW_FILE_REMEMBER_DISCLAIMER, "Password Manager")
     if tmpUserInp is None:
         exit()
-    showPwd = easygui.ynbox("Show password?\nPLEASE NOTE THAT THIS WILL SHOW SENSITIVE DATA TO THE SCREEN", "Password Manager", ("Yes", "No"))
+    showPwd = ynBox(language.CREATE_NEW_FILE_SHOW_PASSWORD_PROMPT, "Password Manager")
     if showPwd is None:
         exit()
     if showPwd:
-        easygui.msgbox("Your password is: " + password, "Password Manager")
-    userPwdSafeConfirm = easygui.ynbox("Make sure to save the password somewhere safe. Please confirm.", "Password Manager")
+        easygui.msgbox(language.YOUR_PASSWORD_IS + password, "Password Manager")
+    userPwdSafeConfirm = ynBox(language.CREATE_NEW_FILE_CONFIRM_PASSWORD_SAVED, "Password Manager")
     while not userPwdSafeConfirm:
         if userPwdSafeConfirm is None:
             exit()
-        userPwdSafeConfirm = easygui.ynbox("You have to confirm before you can continue. Please make sure your password is backed up somewhere.", "Password Manager")
-    print("Creating new encrypted password file...")
+        userPwdSafeConfirm = ynBox(language.CREATE_NEW_FILE_CONFIRM_PASSWORD_SAVED_AGAIN, "Password Manager")
+    print(language.CREATE_NEW_FILE_CREATING)
     structureTools.createEncryptedFile(newFileName, password)
-    easygui.msgbox("Welcome to the password manager\nYou can enter your login data in this interface\nThe data will be encrypted with the master password and stored in the file (" + newFileName + ")\nYou should do a backup of the file regularly to avoid losing data\nIf you lose the file, you will lose all data in it", "Password Manager")
+    easygui.msgbox(language.CREATE_NEW_FILE_WELCOME1 + newFileName + language.CREATE_NEW_FILE_WELCOME2, "Password Manager")
     return (os.path.join(structureTools.userDataDir, newFileName + settings.extension), password)
 
 def chooseEncFile(encFiles: list[str], isFullPath = True, preselectFile: str = None) -> str:
@@ -159,11 +180,11 @@ def chooseEncFile(encFiles: list[str], isFullPath = True, preselectFile: str = N
         return encFiles[0]
     if preselectFile is not None:
         if preselectFile not in encFiles:
-            print("Error in chooseEncFile: preselectFile ("+preselectFile+") not in encFiles")
+            print(language.ERR_PRESELECTED_FILE_NOT_FOUND1 + preselectFile + language.ERR_PRESELECTED_FILE_NOT_FOUND2)
             exit()
         # get index of preselectFile
         preselectIndex = encFiles.index(preselectFile)
-    fileName = easygui.choicebox("Choose a file to open: ", "Password Manager", encFiles, preselectIndex)
+    fileName = easygui.choicebox(language.CHOOSE_FILE, "Password Manager", encFiles, preselectIndex)
     if fileName is None:
         exit()
     if isFullPath:
@@ -172,7 +193,7 @@ def chooseEncFile(encFiles: list[str], isFullPath = True, preselectFile: str = N
 
 def getPassword(filePath: str, encFiles: list[str]) -> tuple[str, str, bytes]:
     while True:
-        retCode, result = createPasswordWindow("Enter the master password for the file ("+filePath+"): ", "Password Manager", encFiles, filePath)
+        retCode, result = createPasswordWindow(language.ENTER_MASTER_PASSWORD + filePath + "): ", "Password Manager", encFiles, filePath)
         if retCode == "CANCEL":
             exit()
         elif retCode == "CHANGE":
@@ -186,12 +207,12 @@ def getPassword(filePath: str, encFiles: list[str]) -> tuple[str, str, bytes]:
                 exit()
             dataBytes = encryption.decrypt_file(filePath, password)
             while(not dataBytes):
-                password = easygui.passwordbox("Wrong password for file ("+filePath+"). Try again: ", "Password Manager")
+                password = easygui.passwordbox(language.ERR_WRONG_MASTER_PASSWORD1 + filePath + language.ERR_WRONG_MASTER_PASSWORD2, "Password Manager")
                 if password is None:
                     exit()
                 dataBytes = encryption.decrypt_file(filePath, password)
             structureTools.saveLastUsedFile(os.path.basename(filePath)[:-len(settings.extension)])
             return (filePath, password, dataBytes)
         else:
-            print("Error in getPassword: Invalid return code: " + retCode)
+            print(language.ERR_INVALID_RETURN_CODE + retCode)
             exit()
