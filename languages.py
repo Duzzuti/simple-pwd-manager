@@ -60,6 +60,7 @@ class Language():
     NEW_INFORMATION = None
     NEWER_VERSION_AVAILABLE1 = None
     NEWER_VERSION_AVAILABLE2 = None
+    NEWER_VERSION_AVAILABLE3 = None
     NO_LOGINS_FOUND = None
     NO_OTHER_INFO_FOUND = None
     PASSWORD_ENTRY_ALREADY_EXISTS_MESSAGE = None
@@ -173,6 +174,7 @@ class English(Language):
     NEW_INFORMATION = "New information"
     NEWER_VERSION_AVAILABLE1 = "There is a newer version of the program available. Do you want to download and install it?\n\nCurrent version: "
     NEWER_VERSION_AVAILABLE2 = "\nNew version: "
+    NEWER_VERSION_AVAILABLE3 = "\n\nYou can disable the automatic update check in the settings."
     NO_LOGINS_FOUND = "No logins found."
     NO_OTHER_INFO_FOUND = "No other information found."
     PASSWORD_ENTRY_ALREADY_EXISTS_MESSAGE = "An entry for this website/app already exists. Do you want to add the information as an other login? (No does NOT safe the new information). \nIf you want to change old information (e.g. a single password) please use the 'Change password' section of the main menu.\n\n"
@@ -285,6 +287,7 @@ class German(Language):
     NEW_INFORMATION = "Neue Information"
     NEWER_VERSION_AVAILABLE1 = "Es ist eine neuere Version des Programms verfügbar. Möchten Sie diese herunterladen und installieren?\n\nAktuelle Version: "
     NEWER_VERSION_AVAILABLE2 = "\nNeue Version: "
+    NEWER_VERSION_AVAILABLE3 = "\n\nSie können die automatische Suche nach Updates in den Einstellungen deaktivieren."
     NO_LOGINS_FOUND = "Keine Anmeldedaten gefunden."
     NO_OTHER_INFO_FOUND = "Keine sonstigen Informationen gefunden."
     PASSWORD_ENTRY_ALREADY_EXISTS_MESSAGE = "Ein Eintrag für diese Webseite/App existiert bereits. Möchten Sie die Informationen als weitere Anmeldung hinzufügen? (Nein speichert die neuen Informationen NICHT). \nWenn Sie alte Informationen ändern möchten (z.B. ein einzelnes Passwort), verwenden Sie bitte den Abschnitt 'Anmeldedaten ändern' im Hauptmenü.\n\n"
