@@ -4,6 +4,7 @@ try:
     import os
     import easygui
 
+    import settings
     import network
     import structureTools
     from data import Data
@@ -20,7 +21,8 @@ structureTools.init()
 lastUsedFile = structureTools.getLastUsedFile(fullPath=True)
 encFiles = structureTools.getAllFilesInDir(structureTools.userDataDir, fullPath=True)
 
-network.check_for_updates(threaded=True)
+if settings.checkUpdates:
+    network.check_for_updates(threaded=True)
 
 # SELECT AND DECRYPT FILE
 password = None

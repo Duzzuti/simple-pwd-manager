@@ -24,7 +24,7 @@ def check_for_updates(threaded=False):
         data = request.json()
         latestVersion = data["tag_name"]
         if settings.isVersionNewer(latestVersion):
-            tmp = ynBox(language.NEWER_VERSION_AVAILABLE1 + settings.version + language.NEWER_VERSION_AVAILABLE2 + latestVersion, "Password Manager")
+            tmp = ynBox(language.NEWER_VERSION_AVAILABLE1 + settings.version + language.NEWER_VERSION_AVAILABLE2 + latestVersion + language.NEWER_VERSION_AVAILABLE3, "Password Manager")
             if tmp:
                 download_url = data["zipball_url"]
                 try:

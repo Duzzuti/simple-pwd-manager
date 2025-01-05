@@ -28,6 +28,7 @@ class Language():
     PASSWORD = None
     SETTINGS = None
     SETTINGS_LANGUAGE = None
+    SETTINGS_UPDATE_CHECKER = None
     USERNAME = None
     WEBSITE_APP = None
 
@@ -56,14 +57,15 @@ class Language():
     ENTER_TO_CLEAR = None
     INFO_CONTENT_REQUIRED = None
     INFO_TITLE_REQUIRED = None
-    LANGUAGE_CHANGE_RESTART = None
     NEW_INFORMATION = None
     NEWER_VERSION_AVAILABLE1 = None
     NEWER_VERSION_AVAILABLE2 = None
+    NEWER_VERSION_AVAILABLE3 = None
     NO_LOGINS_FOUND = None
     NO_OTHER_INFO_FOUND = None
     PASSWORD_ENTRY_ALREADY_EXISTS_MESSAGE = None
     RESTART_ENTER_TO_EXIT = None
+    SETTINGS_CHANGE_RESTART = None
     STORE_INFORMATION_FOR = None
     UPDATE_SUCCESSFUL_INSTALL_DEPENDENCIES = None
     UPDATE_SUCCESSFUL1 = None
@@ -98,6 +100,8 @@ class Language():
     ERR_PROGRAM_OUTDATED1 = None
     ERR_PROGRAM_OUTDATED2 = None
     ERR_SETTINGS_OUT_OF_BOUNDS = None
+    ERR_UPDATE_CHECKER_FILE_CORRUPTED = None
+    ERR_UPDATE_CHECKER_FILE_NOT_FOUND = None
     ERR_UPDATE_COULD_NOT_REMOVE_ITEM = None
     ERR_UPDATE_DOWNLOAD_FAILED = None
     ERR_UPDATE_INVALID_STATUS_CODE = None
@@ -138,6 +142,7 @@ class English(Language):
     PASSWORD = "Password"
     SETTINGS = "Settings"
     SETTINGS_LANGUAGE = "Language: "
+    SETTINGS_UPDATE_CHECKER = "Update checks: "
     USERNAME = "Username"
     WEBSITE_APP = "Website/App"
 
@@ -166,14 +171,15 @@ class English(Language):
     ENTER_TO_CLEAR = "Press enter to clear..."
     INFO_CONTENT_REQUIRED = "Please enter the information you want to save. Cannot be empty."
     INFO_TITLE_REQUIRED = "A title is required."
-    LANGUAGE_CHANGE_RESTART = "Please restart the program to apply the language changes."
     NEW_INFORMATION = "New information"
     NEWER_VERSION_AVAILABLE1 = "There is a newer version of the program available. Do you want to download and install it?\n\nCurrent version: "
     NEWER_VERSION_AVAILABLE2 = "\nNew version: "
+    NEWER_VERSION_AVAILABLE3 = "\n\nYou can disable the automatic update check in the settings."
     NO_LOGINS_FOUND = "No logins found."
     NO_OTHER_INFO_FOUND = "No other information found."
     PASSWORD_ENTRY_ALREADY_EXISTS_MESSAGE = "An entry for this website/app already exists. Do you want to add the information as an other login? (No does NOT safe the new information). \nIf you want to change old information (e.g. a single password) please use the 'Change password' section of the main menu.\n\n"
     RESTART_ENTER_TO_EXIT = "Please restart the program. Press enter to exit..."
+    SETTINGS_CHANGE_RESTART = "Please restart the program to apply the changes."
     STORE_INFORMATION_FOR = "Store information for "
     UPDATE_SUCCESSFUL_INSTALL_DEPENDENCIES = "Update successful. The program will now install new dependencies."
     UPDATE_SUCCESSFUL1 = "Dependencies up to date. New version: "
@@ -208,6 +214,8 @@ class English(Language):
     ERR_PROGRAM_OUTDATED1 = "The file was created with a newer version of the program. Please update the program to open the file. (File version: "
     ERR_PROGRAM_OUTDATED2 = ", Program version: "
     ERR_SETTINGS_OUT_OF_BOUNDS = "Some settings were set out of bounds."
+    ERR_UPDATE_CHECKER_FILE_CORRUPTED = "The settings file for the update checker is corrupted. Default values are used (automatic update check)."
+    ERR_UPDATE_CHECKER_FILE_NOT_FOUND = "The settings file for the update checker was not found. Default values are used (automatic update check)."
     ERR_UPDATE_COULD_NOT_REMOVE_ITEM = "Some error occurred while updating. Following items could not be removed: "
     ERR_UPDATE_DOWNLOAD_FAILED = "Could not download the update. Please check your internet connection."
     ERR_UPDATE_INVALID_STATUS_CODE = "Could not check for updates. Got status code: "
@@ -247,6 +255,7 @@ class German(Language):
     PASSWORD = "Passwort"
     SETTINGS = "Einstellungen"
     SETTINGS_LANGUAGE = "Sprache: "
+    SETTINGS_UPDATE_CHECKER = "Nach Updates suchen: "
     USERNAME = "Benutzername"
     WEBSITE_APP = "Webseite/App"
 
@@ -275,14 +284,15 @@ class German(Language):
     ENTER_TO_CLEAR = "Drücken Sie Enter, um die Daten vom Bildschirm zu löschen..."
     INFO_CONTENT_REQUIRED = "Geben Sie erst die Informationen ein, die Sie speichern wollen."
     INFO_TITLE_REQUIRED = "Ein Titel ist erforderlich."
-    LANGUAGE_CHANGE_RESTART = "Bitte starten Sie das Programm neu, um die Sprachänderungen zu übernehmen."
     NEW_INFORMATION = "Neue Information"
     NEWER_VERSION_AVAILABLE1 = "Es ist eine neuere Version des Programms verfügbar. Möchten Sie diese herunterladen und installieren?\n\nAktuelle Version: "
     NEWER_VERSION_AVAILABLE2 = "\nNeue Version: "
+    NEWER_VERSION_AVAILABLE3 = "\n\nSie können die automatische Suche nach Updates in den Einstellungen deaktivieren."
     NO_LOGINS_FOUND = "Keine Anmeldedaten gefunden."
     NO_OTHER_INFO_FOUND = "Keine sonstigen Informationen gefunden."
     PASSWORD_ENTRY_ALREADY_EXISTS_MESSAGE = "Ein Eintrag für diese Webseite/App existiert bereits. Möchten Sie die Informationen als weitere Anmeldung hinzufügen? (Nein speichert die neuen Informationen NICHT). \nWenn Sie alte Informationen ändern möchten (z.B. ein einzelnes Passwort), verwenden Sie bitte den Abschnitt 'Anmeldedaten ändern' im Hauptmenü.\n\n"
     RESTART_ENTER_TO_EXIT = "Bitte starten Sie das Programm neu. Drücken Sie Enter, um das Programm zu beenden..."
+    SETTINGS_CHANGE_RESTART = "Bitte starten Sie das Programm neu, um die Änderungen zu übernehmen."
     STORE_INFORMATION_FOR = "Informationen speichern für "
     UPDATE_SUCCESSFUL_INSTALL_DEPENDENCIES = "Update erfolgreich. Das Programm wird nun neue zugehörige Pakete installieren."
     UPDATE_SUCCESSFUL1 = "Alle Pakete auf dem neuesten Stand. Neue Version: "
@@ -317,6 +327,8 @@ class German(Language):
     ERR_PROGRAM_OUTDATED1 = "Die Datei wurde mit einer neueren Version des Programms erstellt. Bitte aktualisieren Sie das Programm, um die Datei zu öffnen. (Dateiversion: "
     ERR_PROGRAM_OUTDATED2 = ", Programmversion: "
     ERR_SETTINGS_OUT_OF_BOUNDS = "Einige Einstellungen wurden außerhalb der zulässigen Grenzen gesetzt."
+    ERR_UPDATE_CHECKER_FILE_CORRUPTED = "Die Einstellungsdatei für die Suche nach Updates ist beschädigt. Standardwerte werden verwendet (automatische Suche nach Updates)."
+    ERR_UPDATE_CHECKER_FILE_NOT_FOUND = "Die Einstellungsdatei für die Suche nach Updates wurde nicht gefunden. Standardwerte werden verwendet (automatische Suche nach Updates)."
     ERR_UPDATE_COULD_NOT_REMOVE_ITEM = "Ein Fehler ist beim Aktualisieren aufgetreten. Folgende Elemente konnten nicht entfernt werden: "
     ERR_UPDATE_DOWNLOAD_FAILED = "Das Update konnte nicht heruntergeladen werden. Bitte überprüfen Sie Ihre Internetverbindung."
     ERR_UPDATE_INVALID_STATUS_CODE = "Ein Fehler ist beim Suchen nach Updates aufgetreten. Statuscode: "
