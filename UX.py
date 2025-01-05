@@ -14,14 +14,23 @@ settingsRoot = None
 def createSettingsWindow(root: tk.Tk):
     global settingsRoot
     def onApply():
-        if languageVar.get() == language.LANGUAGE:
-            settingsRoot.destroy()
-            return
-        settings.setLanguage(languageVar.get())
+        updated = False
+        if languageVar.get() != language.LANGUAGE:
+            updated = True
+            settings.setLanguage(languageVar.get())
+        if (updateCheckerVar.get() == language.YES) != settings.checkUpdates:
+            updated = True
+            if updateCheckerVar.get() == language.YES:
+                settings.setUpdateChecker(True)
+            else:
+                settings.setUpdateChecker(False)
+        if updated:
+            # restart the program
+            easygui.msgbox(language.SETTINGS_CHANGE_RESTART)
+            os._exit(0)
         settingsRoot.destroy()
-        # restart the program
-        easygui.msgbox(language.LANGUAGE_CHANGE_RESTART)
-        os._exit(0)
+        return
+        
     if settingsRoot is not None:
         settingsRoot.destroy()
     settingsRoot = Toplevel(root)
@@ -35,18 +44,32 @@ def createSettingsWindow(root: tk.Tk):
     label.pack(pady=10)
 
     # Language setting
-    language_setting = tk.Frame(settingsRoot)
+    languageSetting = tk.Frame(settingsRoot)
 
-    label = tk.Label(language_setting, text=language.SETTINGS_LANGUAGE)
-    label.pack(side="left", pady=10)
+    label = tk.Label(languageSetting, text=language.SETTINGS_LANGUAGE)
+    label.pack(side="left")
 
     # Language selection
-    languageVar = tk.StringVar(language_setting)
+    languageVar = tk.StringVar(languageSetting)
     languageVar.set(language.LANGUAGE)
-    languageMenu = tk.OptionMenu(language_setting, languageVar, *language.Languages)
-    languageMenu.pack(side="right", pady=10)
+    languageMenu = tk.OptionMenu(languageSetting, languageVar, *language.Languages)
+    languageMenu.pack(side="right")
 
-    language_setting.pack(pady=10)
+    languageSetting.pack(pady=10)
+
+    # Update checker setting
+    updateChecker = tk.Frame(settingsRoot)
+
+    label = tk.Label(updateChecker, text=language.SETTINGS_UPDATE_CHECKER)
+    label.pack(side="left")
+
+    # Update checker selection
+    updateCheckerVar = tk.StringVar(updateChecker)
+    updateCheckerVar.set(language.YES if settings.checkUpdates else language.NO)
+    updateCheckerMenu = tk.OptionMenu(updateChecker, updateCheckerVar, language.YES, language.NO)
+    updateCheckerMenu.pack(side="right")
+
+    updateChecker.pack(pady=10)
 
     # add Apply and Cancel buttons
     applyButton = tk.Button(settingsRoot, text=language.APPLY, command=onApply)

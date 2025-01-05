@@ -1,6 +1,7 @@
 import languages
 
 language = languages.loadLanguage()
+checkUpdates = None
 
 n = 18      # affects time and memory (is used as 2**n)
 r = 32      # affects memory and with n also time
@@ -50,3 +51,25 @@ def setLanguage(lang):
     global language
     open("language.txt", "w").write(lang)
     language = languages.loadLanguage()
+
+def setUpdateChecker(shouldCheck):
+    global checkUpdates
+    open("updateCheck.txt", "w").write(str(shouldCheck))
+    checkUpdates = shouldCheck
+
+def loadUpdateChecker():
+    global checkUpdates
+    try:
+        content = open("updateCheck.txt", "r").read()
+        if content == "True":
+            checkUpdates = True
+        elif content == "False":
+            checkUpdates = False
+        else:
+            print(language.ERR_UPDATE_CHECKER_FILE_CORRUPTED)
+            setUpdateChecker(True)
+    except:
+        print(language.ERR_UPDATE_CHECKER_FILE_NOT_FOUND)
+        setUpdateChecker(True)
+
+loadUpdateChecker()
