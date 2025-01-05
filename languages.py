@@ -1,4 +1,7 @@
 class Language():
+    Languages = ["English", "Deutsch"]
+    LANGUAGE = None
+
     # ADDONS
     ADD_LOGIN = None
     ADD_OTHER = None
@@ -24,6 +27,7 @@ class Language():
     LOGIN = None
     PASSWORD = None
     SETTINGS = None
+    SETTINGS_LANGUAGE = None
     USERNAME = None
     WEBSITE_APP = None
 
@@ -52,6 +56,7 @@ class Language():
     ENTER_TO_CLEAR = None
     INFO_CONTENT_REQUIRED = None
     INFO_TITLE_REQUIRED = None
+    LANGUAGE_CHANGE_RESTART = None
     NEW_INFORMATION = None
     NEWER_VERSION_AVAILABLE1 = None
     NEWER_VERSION_AVAILABLE2 = None
@@ -105,6 +110,8 @@ class Language():
     ERR_WRONG_MASTER_PASSWORD2 = None
 
 class English(Language):
+    LANGUAGE = "English"
+
     # ADDONS
     ADD_LOGIN = "Add login"
     ADD_OTHER = "Add other"
@@ -130,6 +137,7 @@ class English(Language):
     LOGIN = "Login"
     PASSWORD = "Password"
     SETTINGS = "Settings"
+    SETTINGS_LANGUAGE = "Language: "
     USERNAME = "Username"
     WEBSITE_APP = "Website/App"
 
@@ -155,9 +163,10 @@ class English(Language):
     ENTER_FOLLOWING = "Enter the following information: "
     ENTER_MASTER_PASSWORD = "Enter the master password for the file ("
     ENTER_TO_EXIT = "Press enter to exit..."
-    ENTER_TO_CLEAR = "Press Enter to clear..."
+    ENTER_TO_CLEAR = "Press enter to clear..."
     INFO_CONTENT_REQUIRED = "Please enter the information you want to save. Cannot be empty."
     INFO_TITLE_REQUIRED = "A title is required."
+    LANGUAGE_CHANGE_RESTART = "Please restart the program to apply the language changes."
     NEW_INFORMATION = "New information"
     NEWER_VERSION_AVAILABLE1 = "There is a newer version of the program available. Do you want to download and install it?\n\nCurrent version: "
     NEWER_VERSION_AVAILABLE2 = "\nNew version: "
@@ -211,6 +220,7 @@ class English(Language):
     ERR_WRONG_MASTER_PASSWORD2 = "). Please try again."
     
 class German(Language):
+    LANGUAGE = "Deutsch"
     # ADDONS
     ADD_LOGIN = "Login hinzufügen"
     ADD_OTHER = "Sonstiges hinzufügen"
@@ -236,6 +246,7 @@ class German(Language):
     LOGIN = "Anmelden"
     PASSWORD = "Passwort"
     SETTINGS = "Einstellungen"
+    SETTINGS_LANGUAGE = "Sprache: "
     USERNAME = "Benutzername"
     WEBSITE_APP = "Webseite/App"
 
@@ -264,6 +275,7 @@ class German(Language):
     ENTER_TO_CLEAR = "Drücken Sie Enter, um die Daten vom Bildschirm zu löschen..."
     INFO_CONTENT_REQUIRED = "Geben Sie erst die Informationen ein, die Sie speichern wollen."
     INFO_TITLE_REQUIRED = "Ein Titel ist erforderlich."
+    LANGUAGE_CHANGE_RESTART = "Bitte starten Sie das Programm neu, um die Sprachänderungen zu übernehmen."
     NEW_INFORMATION = "Neue Information"
     NEWER_VERSION_AVAILABLE1 = "Es ist eine neuere Version des Programms verfügbar. Möchten Sie diese herunterladen und installieren?\n\nAktuelle Version: "
     NEWER_VERSION_AVAILABLE2 = "\nNeue Version: "
@@ -317,4 +329,17 @@ class German(Language):
     ERR_WRONG_MASTER_PASSWORD2 = "). Bitte versuchen Sie es erneut."
 
 def loadLanguage() -> Language:
-    return German
+    try:
+        lang = open("language.txt", "r").read()
+    except:
+        print("Language file not found. Setting to English.")
+        open("language.txt", "w").write("English")
+        return English()
+    if lang == "English":
+        return English()
+    elif lang == "Deutsch":
+        return German()
+    else:
+        print("Language (", lang, ") not found. Setting to English.")
+        open("language.txt", "w").write("English")
+        return English()

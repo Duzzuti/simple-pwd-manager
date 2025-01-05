@@ -13,6 +13,15 @@ settingsRoot = None
 
 def createSettingsWindow(root: tk.Tk):
     global settingsRoot
+    def onApply():
+        if languageVar.get() == language.LANGUAGE:
+            settingsRoot.destroy()
+            return
+        settings.setLanguage(languageVar.get())
+        settingsRoot.destroy()
+        # restart the program
+        easygui.msgbox(language.LANGUAGE_CHANGE_RESTART)
+        os._exit(0)
     if settingsRoot is not None:
         settingsRoot.destroy()
     settingsRoot = Toplevel(root)
@@ -25,8 +34,22 @@ def createSettingsWindow(root: tk.Tk):
     label = tk.Label(settingsRoot, text=language.SETTINGS)
     label.pack(pady=10)
 
+    # Language setting
+    language_setting = tk.Frame(settingsRoot)
+
+    label = tk.Label(language_setting, text=language.SETTINGS_LANGUAGE)
+    label.pack(side="left", pady=10)
+
+    # Language selection
+    languageVar = tk.StringVar(language_setting)
+    languageVar.set(language.LANGUAGE)
+    languageMenu = tk.OptionMenu(language_setting, languageVar, *language.Languages)
+    languageMenu.pack(side="right", pady=10)
+
+    language_setting.pack(pady=10)
+
     # add Apply and Cancel buttons
-    applyButton = tk.Button(settingsRoot, text=language.APPLY, command=settingsRoot.destroy)
+    applyButton = tk.Button(settingsRoot, text=language.APPLY, command=onApply)
     applyButton.pack(side="left", padx=20, pady=10)
     cancelButton = tk.Button(settingsRoot, text=language.CANCEL, command=settingsRoot.destroy)
     cancelButton.pack(side="right", padx=20, pady=10)

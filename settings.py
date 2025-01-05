@@ -45,3 +45,8 @@ def isVersionNewer(newVersion : str) -> bool:
                 programPatch = 0
             return newVersionPatch > programPatch
     return False
+
+def setLanguage(lang):
+    global language
+    open("language.txt", "w").write(lang)
+    language = languages.loadLanguage()
