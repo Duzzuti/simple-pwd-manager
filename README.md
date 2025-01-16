@@ -7,7 +7,7 @@ A simple password manager written in Python.
 2. Extract the downloaded archive.
 3. Start the program by running `main.py`
     <br><sub>(1. Note that python must be accessible via `py`,  `python3`, or `python` in your PATH)</sub><br>
-    <sub>(2. You can run `.py` files by double clicking or running `python dependencies.py` in a terminal)</sub><br>
+    <sub>(2. You can run `.py` files by double clicking or running `python main.py`, `py main.py` or `python3 main.py` in a terminal)</sub><br>
     <sub>(3. Note that dependencies are installed automatically if they are missing)</sub>
 4. You can also create a shortcut to `main.py` on your desktop or taskbar for easy access.
 
